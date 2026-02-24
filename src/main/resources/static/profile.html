@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 爱心互助社区</title>
+    <link rel="stylesheet" href="[https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap)" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* 导航栏 */
+        .navbar {
+            height: 70px; padding: 0 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 24px; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .btn-back {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer;
+            transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .btn-back:hover { background: white; color: var(--primary); }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+
+        /* 个人信息头部 */
+        .profile-header {
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 40px; margin-bottom: 30px; display: flex; align-items: center; gap: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); animation: slideDown 0.6s ease;
+            position: relative; overflow: hidden;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .avatar-wrapper { position: relative; z-index: 2; }
+        .avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; color: white; border: 4px solid white;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .profile-info { z-index: 2; flex: 1; }
+        .profile-info h1 { font-size: 28px; font-weight: 800; margin-bottom: 10px; color: var(--text-dark); }
+        .profile-meta { display: flex; gap: 25px; }
+        .meta-item { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 14px; font-weight: 500; }
+        .meta-item i { color: var(--primary); font-size: 16px; }
+
+        /* AI 报告按钮 */
+        .btn-ai-report {
+            position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white; padding: 12px 25px; border-radius: 30px; border: none;
+            font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+            transition: 0.3s; display: flex; align-items: center; gap: 8px; z-index: 2;
+            animation: pulse 2s infinite;
+        }
+        .btn-ai-report:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 15px 25px rgba(245, 158, 11, 0.4); }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
+
+        /* 内容网格 */
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .glass-card {
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 18px; font-weight: 700; color: var(--text-dark);
+            margin-bottom: 25px; display: flex; align-items: center; gap: 10px;
+            padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .card-title i { color: var(--primary); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-dark); }
+        .form-input {
+            width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 12px;
+            font-size: 14px; transition: 0.3s; background: rgba(255,255,255,0.5);
+        }
+        .form-input:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); outline: none; }
+        .form-input:disabled { background: rgba(0,0,0,0.05); cursor: not-allowed; }
+
+        /* 技能标签 */
+        .skills-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .skill-tag {
+            padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            background: rgba(255,255,255,0.5); border: 1px solid #e2e8f0;
+            cursor: pointer; transition: 0.3s; color: var(--text-gray);
+        }
+        .skill-tag:hover { border-color: var(--primary); color: var(--primary); background: white; }
+        .skill-tag.active {
+            background: var(--primary); color: white; border-color: var(--primary);
+            box-shadow: 0 4px 10px var(--primary-glow);
+        }
+
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 12px; font-weight: 700; font-size: 15px;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-primary:hover { background: #4f46e5; box-shadow: 0 8px 20px var(--primary-glow); transform: translateY(-2px); }
+
+        /* 密码强度条 */
+        .strength-bar { height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 8px; overflow: hidden; position: relative; }
+        .strength-fill { height: 100%; width: 0; transition: 0.3s; }
+        .s-weak { width: 33%; background: #ef4444; }
+        .s-medium { width: 66%; background: #f59e0b; }
+        .s-strong { width: 100%; background: #10b981; }
+
+        /* ================= AI 报告弹窗 (高级定制) ================= */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+
+        .report-card {
+            background: white; width: 500px; border-radius: 30px; overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3); position: relative;
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .report-header {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            padding: 40px 30px; text-align: center; color: white; position: relative;
+        }
+        .report-header::after {
+            content: '✨'; position: absolute; top: 10px; right: 20px; font-size: 60px; opacity: 0.2; transform: rotate(20deg);
+        }
+        .report-avatar {
+            width: 80px; height: 80px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.5);
+            margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
+            background: white; color: var(--primary); font-size: 30px;
+        }
+        .report-name { font-size: 22px; font-weight: 800; }
+
+        .report-content { padding: 30px; min-height: 200px; position: relative; }
+
+        /* AI 生成内容的样式 */
+        .report-title { font-size: 20px; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; text-align: center; }
+        .report-summary { font-size: 15px; color: #4b5563; line-height: 1.8; margin-bottom: 20px; text-align: justify; }
+        .report-tags { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
+        .report-tags span { background: #f3f4f6; color: var(--primary); padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .report-persona { text-align: center; font-size: 18px; font-weight: 800; color: #f59e0b; border-top: 1px dashed #e5e7eb; padding-top: 20px; }
+
+        .btn-close-modal {
+            position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2);
+            border: none; width: 30px; height: 30px; border-radius: 50%; color: white; cursor: pointer;
+        }
+        .btn-share {
+            width: 100%; padding: 15px; background: var(--text-dark); color: white; border: none;
+            font-weight: 700; cursor: pointer; font-size: 16px;
+        }
+        .btn-share:hover { background: black; }
+
+        .loading-box { text-align: center; padding: 50px; }
+        .loading-box i { font-size: 40px; color: var(--primary); animation: spin 1s infinite linear; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="navbar-left">
+        <div class="logo" onclick="goBack()"><i class="fas fa-heart"></i> 爱心互助社区</div>
+    </div>
+    <button class="btn-back" onclick="goBack()"><i class="fas fa-arrow-left"></i> 返回首页</button>
+</div>
+
+<div class="container" id="mainContainer">
+    <div class="loading"><i class="fas fa-spinner fa-spin"></i><p>加载个人信息...</p></div>
+</div>
+
+<div class="modal" id="reportModal">
+    <div class="report-card">
+        <button class="btn-close-modal" onclick="closeReport()"><i class="fas fa-times"></i></button>
+        <div class="report-header">
+            <div class="report-avatar"><i class="fas fa-user"></i></div>
+            <div class="report-name">年度志愿报告</div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">DeepSeek AI 独家生成</div>
+        </div>
+        <div class="report-content" id="reportContent">
+            <div class="loading-box">
+                <i class="fas fa-magic"></i>
+                <p>AI 正在回顾您的志愿旅程...</p>
+                <p style="font-size:12px; color:#999;">(可能需要 5-10 秒)</p>
+            </div>
+        </div>
+        <button class="btn-share" onclick="closeReport()">收下这份感动 ❤️</button>
+    </div>
+</div>
+
+<script>
+    let volunteerId = null;
+    let userData = null;
+
+    window.onload = function() {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        volunteerId = userInfo.id;
+        if (!volunteerId) { alert('请先登录'); window.location.href = 'login.html'; return; }
+        loadUserData();
+    };
+
+    async function loadUserData() {
+        try {
+            const response = await fetch(`http://localhost:8080/api/user/${volunteerId}`);
+            const result = await response.json();
+            if (result.code === 200) {
+                userData = result.data;
+                renderProfile();
+            } else { alert('加载用户信息失败'); }
+        } catch (error) { console.error('加载失败:', error); }
+    }
+
+    function renderProfile() {
+        const container = document.getElementById('mainContainer');
+        const selectedSkills = userData.skills ? userData.skills.split(',') : [];
+
+        container.innerHTML = `
+            <div class="profile-header">
+                <div class="avatar-wrapper">
+                    <div class="avatar"><i class="fas fa-user"></i></div>
+                </div>
+                <div class="profile-info">
+                    <h1>${userData.realName || '志愿者'}</h1>
+                    <div class="profile-meta">
+                        <div class="meta-item"><i class="fas fa-star"></i> <span>${getStars(userData.starLevel)}</span></div>
+                        <div class="meta-item"><i class="fas fa-clock"></i> <span>${userData.totalHours || 0} 小时</span></div>
+                        <div class="meta-item"><i class="fas fa-coins"></i> <span>${userData.totalPoints || 0} 积分</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="content-grid">
+                <div class="glass-card">
+                    <div class="card-title"><i class="fas fa-id-card"></i> 基本信息</div>
+                    <form id="infoForm">
+                        <div class="form-group"><label class="form-label">用户名</label><input type="text" class="form-input" value="${userData.username}" disabled></div>
+                        <div class="form-group"><label class="form-label">真实姓名</label><input type="text" class="form-input" id="realName" value="${userData.realName||''}" required></div>
+                        <div class="form-group"><label class="form-label">手机号</label><input type="tel" class="form-input" id="phone" value="${userData.phone||''}" pattern="[0-9]{11}" required></div>
+                        <div class="form-group"><label class="form-label">邮箱</label><input type="email" class="form-input" id="email" value="${userData.email||''}"></div>
+                        <div class="form-group"><label class="form-label">居住地址</label><input type="text" class="form-input" id="address" value="${userData.address||''}"></div>
+                        <div class="form-group">
+                            <label class="form-label">擅长技能</label>
+                            <div class="skills-tags">
+                                ${['医疗急救','心理咨询','法律援助','摄影','文案','其他'].map(s =>
+            `<span class="skill-tag ${selectedSkills.includes(s)?'active':''}" onclick="toggleSkill(this)">${s}</span>`
+        ).join('')}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">保存修改</button>
+                    </form>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-title"><i class="fas fa-shield-alt"></i> 安全设置</div>
+                    <form id="passwordForm">
+                        <div class="form-group"><label class="form-label">原密码</label><input type="password" class="form-input" id="oldPassword" required></div>
+                        <div class="form-group">
+                            <label class="form-label">新密码</label>
+                            <input type="password" class="form-input" id="newPassword" onkeyup="checkPwd(this.value)" required>
+                            <div class="strength-bar"><div class="strength-fill" id="sFill"></div></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">确认新密码</label><input type="password" class="form-input" id="confirmPassword" required></div>
+                        <button type="submit" class="btn-primary">修改密码</button>
+                    </form>
+                </div>
+            </div>
+        `;
+        setupHandlers();
+    }
+
+    // 生成 AI 报告核心逻辑
+    async function generateReport() {
+        const modal = document.getElementById('reportModal');
+        const content = document.getElementById('reportContent');
+        modal.classList.add('active');
+
+        // 重置为加载状态
+        content.innerHTML = `
+            <div class="loading-box">
+                <i class="fas fa-magic"></i>
+                <p>AI 正在回顾您的志愿旅程...</p>
+                <p style="font-size:12px; color:#999;">(DeepSeek 正在撰写，请稍候)</p>
+            </div>
+        `;
+
+        try {
+            const res = await fetch('http://localhost:8080/api/ai/report', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ volunteerId: volunteerId })
+            });
+            const r = await res.json();
+
+            if (r.code === 200) {
+                // 渲染 AI 返回的 HTML
+                content.innerHTML = r.data;
+            } else {
+                content.innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444;">生成失败：${r.msg}</div>`;
+            }
+        } catch (e) {
+            content.innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444;">网络连接异常</div>`;
+        }
+    }
+
+    function closeReport() {
+        document.getElementById('reportModal').classList.remove('active');
+    }
+
+    function getStars(level) { level = level || 1; return '★'.repeat(level) + '☆'.repeat(5 - level); }
+    function toggleSkill(el) { el.classList.toggle('active'); }
+    function checkPwd(p) {
+        const bar = document.getElementById('sFill');
+        if(!p) { bar.className = 'strength-fill'; return; }
+        let s = 0;
+        if(p.length>=6) s++; if(p.length>=10) s++; if(/[A-Z]/.test(p)) s++; if(/[0-9]/.test(p)) s++;
+        bar.className = 'strength-fill ' + (s<=2 ? 's-weak' : s<=3 ? 's-medium' : 's-strong');
+    }
+
+    function setupHandlers() {
+        document.getElementById('infoForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const skills = Array.from(document.querySelectorAll('.skill-tag.active')).map(t => t.innerText).join(',');
+            const data = { userId: volunteerId, realName: document.getElementById('realName').value, phone: document.getElementById('phone').value, email: document.getElementById('email').value, address: document.getElementById('address').value, skills: skills };
+            try {
+                const res = await fetch('http://localhost:8080/api/user/update', { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+                if((await res.json()).code===200) { alert('保存成功'); loadUserData(); } else { alert('保存失败'); }
+            } catch(e){ alert('网络错误'); }
+        });
+
+        document.getElementById('passwordForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const n = document.getElementById('newPassword').value;
+            if(n !== document.getElementById('confirmPassword').value) return alert('两次密码不一致');
+            try {
+                const res = await fetch('http://localhost:8080/api/user/change-password', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ userId: volunteerId, oldPassword: document.getElementById('oldPassword').value, newPassword: n }) });
+                if((await res.json()).code===200) { alert('密码修改成功，请重新登录'); localStorage.removeItem('userInfo'); window.location.href='login.html'; } else { alert('原密码错误'); }
+            } catch(e){ alert('网络错误'); }
+        });
+    }
+
+    function goBack() { window.location.href = 'volunteer-home.html'; }
+</script>
+</body>
+</html>

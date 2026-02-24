@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组织者工作台 - 爱心互助社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f7fa; }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 0 30px; height: 70px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .navbar-left { display: flex; align-items: center; gap: 20px; }
+        .logo { font-size: 24px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .navbar-right { display: flex; align-items: center; gap: 25px; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar {
+            width: 45px; height: 45px; border-radius: 50%; background: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #667eea; border: 3px solid white;
+        }
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white;
+            padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-size: 14px;
+        }
+        .btn-logout:hover { background: white; color: #667eea; }
+
+        .main-container { display: flex; min-height: calc(100vh - 70px); }
+        .sidebar { width: 250px; background: white; box-shadow: 5px 0 20px rgba(0, 0, 0, 0.05); padding: 30px 0; }
+        .menu-item {
+            padding: 15px 30px; cursor: pointer; display: flex; align-items: center; gap: 15px;
+            color: #666; transition: all 0.3s; font-size: 15px; position: relative;
+        }
+        .menu-item::before {
+            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0); transition: transform 0.3s;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+            color: #667eea;
+        }
+        .menu-item:hover::before, .menu-item.active::before { transform: scaleY(1); }
+        .menu-item i { font-size: 18px; width: 25px; }
+
+        .content { flex: 1; padding: 30px; }
+        .welcome-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 40px; border-radius: 20px; margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); animation: slideDown 0.6s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .welcome-banner h2 { font-size: 28px; margin-bottom: 10px; }
+        .welcome-banner p { font-size: 14px; opacity: 0.9; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .stat-card {
+            background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s; cursor: pointer; animation: fadeInUp 0.6s ease; position: relative; overflow: hidden;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; }
+        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); }
+
+        .stat-icon {
+            width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; margin-bottom: 20px; color: white;
+        }
+        .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); }
+        .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .stat-value { font-size: 36px; font-weight: bold; color: #333; margin-bottom: 8px; }
+        .stat-label { color: #999; font-size: 14px; }
+
+        .quick-actions {
+            background: white; border-radius: 20px; padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); animation: fadeInUp 0.6s ease 0.4s backwards;
+        }
+        .section-title { font-size: 20px; color: #333; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .action-btn {
+            padding: 25px; border: none; border-radius: 15px; cursor: pointer; transition: all 0.3s; text-align: center; color: white;
+        }
+        .action-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        .action-btn i { font-size: 32px; margin-bottom: 10px; display: block; }
+        .action-btn:nth-child(1) { background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); }
+        .action-btn:nth-child(2) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .action-btn:nth-child(3) { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .action-btn:nth-child(4) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .action-text { font-size: 15px; font-weight: 500; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="navbar-left">
+        <div class="logo"><i class="fas fa-user-tie"></i> <span>组织者工作台</span></div>
+    </div>
+    <div class="navbar-right">
+        <div class="user-info">
+            <div class="avatar"><i class="fas fa-user"></i></div>
+            <span id="userName">组织者</span>
+        </div>
+        <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="sidebar">
+        <div class="menu-item active" onclick="showPage('home')"><i class="fas fa-home"></i> <span>工作台</span></div>
+        <div class="menu-item" onclick="showPage('activities')"><i class="fas fa-calendar-alt"></i> <span>活动管理</span></div>
+        <div class="menu-item" onclick="showPage('enrollments')"><i class="fas fa-user-check"></i> <span>报名审核</span></div>
+        <div class="menu-item" onclick="showPage('hours')"><i class="fas fa-clock"></i> <span>时长管理</span></div>
+    </div>
+
+    <div class="content">
+        <div class="welcome-banner">
+            <h2>欢迎回来，<span id="welcomeName">组织者</span>！</h2>
+            <p>今天也要继续为社区志愿服务添砖加瓦哦 💪</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" onclick="showPage('enrollments')">
+                <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+                <div class="stat-value" id="pendingEnrollments">0</div>
+                <div class="stat-label">待审核报名</div>
+            </div>
+            <div class="stat-card" onclick="showPage('makeup')">
+                <div class="stat-icon"><i class="fas fa-edit"></i></div>
+                <div class="stat-value" id="pendingMakeups">0</div>
+                <div class="stat-label">待审核补录</div>
+            </div>
+            <div class="stat-card" onclick="showPage('activities')">
+                <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                <div class="stat-value" id="todayActivities">0</div>
+                <div class="stat-label">今日活动</div>
+            </div>
+            <div class="stat-card" onclick="showPage('activities')">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-value" id="monthActivities">0</div>
+                <div class="stat-label">本月活动</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="section-title">快捷操作</div>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="showPage('activities')">
+                    <i class="fas fa-plus-circle"></i>
+                    <div class="action-text">创建活动</div>
+                </button>
+                <button class="action-btn" onclick="showPage('enrollments')">
+                    <i class="fas fa-user-check"></i>
+                    <div class="action-text">审核报名</div>
+                </button>
+                <button class="action-btn" onclick="showPage('hours')">
+                    <i class="fas fa-qrcode"></i>
+                    <div class="action-text">签到管理</div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let organizerId = null;
+
+    window.onload = function() {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        organizerId = userInfo.id;
+
+        if (!organizerId || userInfo.userType !== 2) {
+            alert('请使用组织者账号登录');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        document.getElementById('userName').textContent = userInfo.realName || '组织者';
+        document.getElementById('welcomeName').textContent = userInfo.realName || '组织者';
+    };
+
+    function showPage(page) {
+        const pageMap = {
+            'home': 'organizer-home.html',
+            'activities': 'organizer-activities.html',
+            // 重点修改：带上了 mode=audit 标识
+            'enrollments': 'organizer-activities.html?mode=audit',
+            'hours': 'organizer-hours.html'
+        };
+
+        if (pageMap[page]) {
+            window.location.href = pageMap[page];
+        }
+    }
+
+    function logout() {
+        if (confirm('确定要退出登录吗？')) {
+            localStorage.removeItem('userInfo');
+            window.location.href = 'login.html';
+        }
+    }
+</script>
+</body>
+</html>

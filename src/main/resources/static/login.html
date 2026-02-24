@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爱心互助社区志愿者管理系统 - 登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FFB347 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 900px;
+            max-width: 95%;
+            display: flex;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            padding: 60px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-panel h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .left-panel p {
+            font-size: 16px;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        .left-panel .icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 60px 40px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            color: #FF6B6B;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .login-subtitle {
+            color: #999;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #FF6B6B;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #FF6B6B;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+            padding: 8px;
+            background: #ffe5e5;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .left-panel {
+                padding: 40px 30px;
+            }
+            .right-panel {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="left-panel">
+        <div class="icon">❤️</div>
+        <h1>爱心互助社区</h1>
+        <p>奉献 · 友爱 · 互助 · 进步</p>
+        <p style="margin-top: 20px;">用爱心温暖社区，用行动传递希望。加入我们，成为志愿服务的一份子！</p>
+    </div>
+
+    <div class="right-panel">
+        <h2 class="login-title">欢迎登录</h2>
+        <p class="login-subtitle">Welcome Back</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" placeholder="请输入密码" required>
+            </div>
+
+            <div class="form-group">
+                <label for="userType">登录身份</label>
+                <select id="userType" name="userType" required>
+                    <option value="">请选择登录身份</option>
+                    <option value="1">志愿者</option>
+                    <option value="2">活动组织者</option>
+                    <option value="3">系统管理员</option>
+                </select>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <button type="submit" class="btn-login">登 录</button>
+
+            <div class="links">
+                <a href="register.html">志愿者注册</a>
+                <a href="forgot-password.html">忘记密码</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.style.display = 'none';
+
+        // 获取表单数据
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const userType = document.getElementById('userType').value;
+
+        // 前端验证
+        if (!username) {
+            showError('请输入用户名');
+            return;
+        }
+        if (!password) {
+            showError('请输入密码');
+            return;
+        }
+        if (!userType) {
+            showError('请选择登录身份');
+            return;
+        }
+
+        try {
+            // 发送登录请求
+            const response = await fetch('http://localhost:8080/api/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    userType: parseInt(userType)
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.code === 200) {
+                // 登录成功
+                alert('登录成功！欢迎您，' + result.data.realName);
+
+                // 保存用户信息到本地存储
+                localStorage.setItem('userInfo', JSON.stringify(result.data));
+
+                // 根据用户类型跳转到不同页面
+                if (userType === '1') {
+                    window.location.href = 'volunteer-home.html';  // 志愿者首页
+                } else if (userType === '2') {
+                    window.location.href = 'organizer-home.html';  // 组织者首页
+                } else if (userType === '3') {
+                    window.location.href = 'admin-home.html';  // 管理员首页
+                }
+            } else {
+                // 登录失败
+                showError(result.message || '登录失败，请重试');
+            }
+        } catch (error) {
+            console.error('登录错误:', error);
+            showError('网络错误，请检查后端服务是否启动');
+        }
+    });
+
+    function showError(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+    }
+</script>
+</body>
+</html>

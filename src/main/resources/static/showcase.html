@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风采展示 - 爱心互助社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 导航栏 */
+        .navbar {
+            height: 70px; padding: 0 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 24px; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .btn-back {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer;
+            transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .btn-back:hover { background: white; color: var(--primary); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        /* 筛选标签 (悬浮胶囊) */
+        .filter-tabs {
+            display: flex; gap: 15px; margin-bottom: 40px; justify-content: center;
+            animation: slideDown 0.6s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .filter-tab {
+            padding: 12px 30px; border-radius: 25px; cursor: pointer;
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); color: var(--text-gray); font-weight: 600;
+            transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .filter-tab:hover { transform: translateY(-3px); background: white; color: var(--primary); }
+        .filter-tab.active {
+            background: white; color: var(--primary); border-color: white;
+            box-shadow: 0 8px 20px var(--primary-glow);
+        }
+
+        /* 瀑布流布局 */
+        .masonry-grid { column-count: 3; column-gap: 25px; }
+        @media (max-width: 900px) { .masonry-grid { column-count: 2; } }
+        @media (max-width: 600px) { .masonry-grid { column-count: 1; } }
+
+        .article-card {
+            break-inside: avoid; margin-bottom: 25px;
+            background: var(--glass); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            overflow: hidden; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            animation: fadeInUp 0.6s ease backwards;
+        }
+        .article-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); z-index: 10; background: rgba(255,255,255,0.9); }
+
+        .image-wrapper { position: relative; overflow: hidden; }
+        .article-image { width: 100%; display: block; transition: transform 0.6s; }
+        .article-card:hover .article-image { transform: scale(1.1); }
+
+        .top-badge {
+            position: absolute; top: 15px; right: 15px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white; padding: 4px 12px; border-radius: 12px;
+            font-size: 11px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .article-content { padding: 20px; }
+        .article-type {
+            display: inline-block; padding: 4px 10px; border-radius: 8px;
+            font-size: 11px; font-weight: 600; color: var(--primary);
+            background: rgba(99, 102, 241, 0.1); margin-bottom: 8px;
+        }
+
+        .article-title { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; line-height: 1.4; }
+        .article-excerpt { font-size: 13px; color: var(--text-gray); line-height: 1.6; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .article-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 12px; color: #94a3b8;
+        }
+        .meta-item { display: flex; align-items: center; gap: 5px; }
+        .meta-item i { color: var(--primary); }
+
+        /* 弹窗 (毛玻璃全屏) */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; overflow-y: auto; padding: 40px 20px; }
+        .modal.active { display: flex; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background: white; width: 100%; max-width: 800px; border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3); position: relative;
+            animation: slideUp 0.4s ease; margin: auto; overflow: hidden;
+        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-header { position: relative; height: 300px; }
+        .modal-image { width: 100%; height: 100%; object-fit: cover; }
+        .btn-close {
+            position: absolute; top: 20px; right: 20px; width: 40px; height: 40px;
+            border-radius: 50%; background: rgba(255,255,255,0.8); border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s; backdrop-filter: blur(4px);
+        }
+        .btn-close:hover { background: white; transform: rotate(90deg); color: var(--danger); }
+
+        .modal-body { padding: 40px; }
+        .modal-title { font-size: 28px; font-weight: 800; margin-bottom: 15px; color: var(--text-dark); }
+        .modal-meta { display: flex; gap: 20px; margin-bottom: 25px; color: var(--text-gray); font-size: 14px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; }
+        .modal-text { font-size: 16px; line-height: 1.8; color: #475569; white-space: pre-wrap; }
+
+        /* 加载与分页 */
+        .loading { text-align: center; padding: 60px; color: white; font-size: 18px; }
+        .loading i { font-size: 40px; margin-bottom: 15px; }
+        .empty-state { text-align: center; padding: 100px; color: white; }
+        .empty-state i { font-size: 60px; margin-bottom: 20px; opacity: 0.8; }
+
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; }
+        .page-btn {
+            width: 40px; height: 40px; border-radius: 12px; border: none;
+            background: var(--glass); backdrop-filter: blur(5px);
+            cursor: pointer; transition: 0.3s; font-weight: 600; color: var(--text-gray);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .page-btn:hover:not(.disabled) { background: white; color: var(--primary); transform: translateY(-3px); }
+        .page-btn.active { background: var(--primary); color: white; box-shadow: 0 5px 15px var(--primary-glow); }
+        .page-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <div class="logo" onclick="goBack()"><i class="fas fa-heart"></i> 爱心互助社区</div>
+    </div>
+    <button class="btn-back" onclick="goBack()"><i class="fas fa-arrow-left"></i> 返回首页</button>
+</div>
+
+<div class="container">
+    <div class="filter-tabs">
+        <div class="filter-tab active" data-type="" onclick="filterArticles(this, '')">全部</div>
+        <div class="filter-tab" data-type="2" onclick="filterArticles(this, 2)">活动风采</div>
+        <div class="filter-tab" data-type="3" onclick="filterArticles(this, 3)">志愿者故事</div>
+    </div>
+
+    <div id="articlesContainer">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i><p>精彩瞬间加载中...</p></div>
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+</div>
+
+<div class="modal" id="detailModal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <img id="modalImage" src="" class="modal-image">
+            <button class="btn-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="modalType" style="color:var(--primary); font-weight:600; font-size:14px; margin-bottom:5px;"></div>
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <div class="modal-meta">
+                <div class="meta-item"><i class="far fa-calendar-alt"></i> <span id="modalTime"></span></div>
+            </div>
+            <div id="modalContent" class="modal-text"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    let currentType = '';
+
+    window.onload = function() { loadArticles(); };
+
+    function filterArticles(element, type) {
+        document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+        element.classList.add('active');
+        currentType = type;
+        currentPage = 1;
+        loadArticles();
+    }
+
+    async function loadArticles() {
+        const container = document.getElementById('articlesContainer');
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>加载中...</p></div>';
+
+        try {
+            let url = `http://localhost:8080/api/article/list?pageNum=${currentPage}&pageSize=12`;
+            if (currentType) url += `&articleType=${currentType}`;
+
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.code === 200) {
+                displayArticles(result.data.records);
+                displayPagination(result.data);
+            } else {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>加载失败</p></div>';
+            }
+        } catch (error) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-wifi"></i><p>网络异常</p></div>';
+        }
+    }
+
+    function displayArticles(articles) {
+        const container = document.getElementById('articlesContainer');
+        if (articles.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无风采内容</p></div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="masonry-grid">
+                ${articles.map((article, index) => `
+                    <div class="article-card" style="animation-delay: ${index * 0.05}s" onclick="showDetail(${article.id})">
+                        <div class="image-wrapper">
+                            <img src="${article.coverImage || 'https://picsum.photos/800/500?random='+article.id}" alt="${article.title}" class="article-image" onerror="this.src='https://picsum.photos/800/500'">
+                            ${article.isTop ? '<div class="top-badge">置顶</div>' : ''}
+                        </div>
+                        <div class="article-content">
+                            <span class="article-type">${getArticleType(article.articleType)}</span>
+                            <div class="article-title">${article.title}</div>
+                            <div class="article-excerpt">${article.content || '暂无内容'}</div>
+                            <div class="article-meta">
+                                <div class="meta-item"><i class="far fa-calendar-alt"></i> ${formatDate(article.createTime)}</div>
+                                <div class="meta-item"><i class="far fa-eye"></i> 阅读</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function getArticleType(type) { return {1:'通知公告',2:'活动风采',3:'志愿者故事'}[type] || '其他'; }
+
+    async function showDetail(id) {
+        try {
+            const res = await fetch(`http://localhost:8080/api/article/${id}`);
+            const r = await res.json();
+            if (r.code === 200) {
+                const article = r.data;
+                document.getElementById('modalImage').src = article.coverImage || 'https://picsum.photos/800/400';
+                document.getElementById('modalType').textContent = getArticleType(article.articleType);
+                document.getElementById('modalTitle').textContent = article.title;
+                document.getElementById('modalTime').textContent = formatDateTime(article.createTime);
+                document.getElementById('modalContent').textContent = article.content || '暂无内容';
+                document.getElementById('detailModal').classList.add('active');
+            }
+        } catch (error) { alert('加载详情失败'); }
+    }
+
+    function closeModal(event) {
+        if (!event || event.target.id === 'detailModal' || event.target.closest('.btn-close')) {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+    }
+
+    function displayPagination(pageData) {
+        const pagination = document.getElementById('pagination');
+        const totalPages = pageData.pages;
+        if (totalPages <= 1) { pagination.innerHTML = ''; return; }
+
+        let html = `<button class="page-btn ${currentPage===1?'disabled':''}" onclick="changePage(${currentPage-1})"><i class="fas fa-chevron-left"></i></button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage-2 && i <= currentPage+2)) {
+                html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+            } else if (i === currentPage-3 || i === currentPage+3) {
+                html += `<span class="page-btn disabled">...</span>`;
+            }
+        }
+        html += `<button class="page-btn ${currentPage===totalPages?'disabled':''}" onclick="changePage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`;
+        pagination.innerHTML = html;
+    }
+
+    function changePage(page) { if(page<1) return; currentPage=page; loadArticles(); window.scrollTo({top:0,behavior:'smooth'}); }
+    function goBack() { window.location.href = 'volunteer-home.html'; }
+    function formatDate(t) { if(!t)return''; const d=new Date(t); return `${d.getMonth()+1}月${d.getDate()}日`; }
+    function formatDateTime(t) { if(!t)return''; const d=new Date(t); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`; }
+</script>
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>积分商城 - 爱心互助社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-strong: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 导航栏 */
+        .navbar {
+            height: 70px; padding: 0 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 24px; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .btn-nav {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer;
+            transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .btn-nav:hover { background: white; color: var(--primary); transform: translateY(-2px); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        /* 积分 Banner (高级玻璃卡片) */
+        .points-banner {
+            background: var(--glass-strong); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 40px; margin-bottom: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            position: relative; overflow: hidden;
+            animation: slideDown 0.6s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .points-banner::after {
+            content: '🎁'; font-size: 150px; position: absolute; right: -20px; bottom: -30px;
+            opacity: 0.1; transform: rotate(-20deg);
+        }
+
+        .points-info h2 { font-size: 16px; color: var(--text-gray); margin-bottom: 10px; font-weight: 600; }
+        .points-value { font-size: 48px; font-weight: 800; color: var(--primary); display: flex; align-items: baseline; gap: 10px; }
+        .points-unit { font-size: 18px; font-weight: 600; color: var(--text-gray); }
+
+        /* 商品列表 */
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--glass); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 20px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; position: relative; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.9); z-index: 10;
+        }
+
+        .product-image-wrapper {
+            height: 200px; border-radius: 16px; overflow: hidden; position: relative;
+            background: #f1f5f9; margin-bottom: 20px;
+        }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
+        .product-card:hover .product-image { transform: scale(1.1); }
+
+        .stock-badge {
+            position: absolute; top: 10px; right: 10px;
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            color: white; backdrop-filter: blur(4px);
+        }
+        .badge-stock { background: rgba(16, 185, 129, 0.9); }
+        .badge-out { background: rgba(239, 68, 68, 0.9); }
+
+        .product-content h3 { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+        .product-desc { font-size: 13px; color: var(--text-gray); height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; }
+
+        .product-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .price-tag { color: #f59e0b; font-weight: 800; font-size: 20px; display: flex; align-items: center; gap: 5px; }
+        .price-tag i { font-size: 16px; }
+
+        .btn-exchange {
+            padding: 8px 20px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 13px;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px var(--primary-glow);
+        }
+        .btn-exchange:hover { transform: translateY(-2px); box-shadow: 0 8px 15px var(--primary-glow); }
+        .btn-exchange:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+
+        /* 弹窗 (玻璃拟态) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background: white; border-radius: 24px; padding: 40px; width: 450px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); animation: slideUp 0.4s ease; position: relative;
+        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .btn-close {
+            position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
+            border-radius: 50%; border: none; background: #f3f4f6; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .btn-close:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
+
+        .modal-header { text-align: center; margin-bottom: 30px; }
+        .modal-img { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .modal-title { font-size: 22px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; }
+        .modal-price { font-size: 28px; font-weight: 800; color: #f59e0b; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-dark); }
+        .form-input {
+            width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 12px;
+            font-size: 14px; transition: 0.3s; outline: none;
+        }
+        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
+
+        /* 数量控制器 */
+        .quantity-box { display: flex; align-items: center; gap: 15px; }
+        .btn-qty {
+            width: 36px; height: 36px; border-radius: 10px; border: 2px solid #e2e8f0;
+            background: white; cursor: pointer; font-weight: 700; color: var(--text-gray); transition: 0.3s;
+        }
+        .btn-qty:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+        .qty-val { font-size: 18px; font-weight: 700; width: 40px; text-align: center; }
+
+        .total-box {
+            background: #fff7ed; padding: 15px; border-radius: 12px; text-align: center;
+            margin: 20px 0; border: 1px solid #ffedd5;
+        }
+        .total-val { font-size: 24px; font-weight: 800; color: #f59e0b; }
+
+        .modal-footer { display: flex; gap: 15px; }
+        .btn-confirm {
+            flex: 1; padding: 14px; background: var(--primary); color: white; border: none;
+            border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        .btn-confirm:hover { background: #4f46e5; box-shadow: 0 5px 15px var(--primary-glow); }
+        .btn-cancel {
+            flex: 1; padding: 14px; background: #f3f4f6; color: var(--text-gray); border: none;
+            border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        .btn-cancel:hover { background: #e5e7eb; }
+
+        /* 加载与分页 */
+        .loading { text-align: center; padding: 60px; color: white; font-size: 18px; }
+        .loading i { font-size: 40px; margin-bottom: 15px; }
+        .empty-state { text-align: center; padding: 80px; }
+        .empty-state i { font-size: 60px; color: white; margin-bottom: 20px; opacity: 0.8; }
+        .empty-state p { color: white; font-size: 16px; }
+
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; }
+        .page-btn {
+            width: 40px; height: 40px; border-radius: 12px; border: none;
+            background: var(--glass); backdrop-filter: blur(5px);
+            cursor: pointer; transition: 0.3s; font-weight: 600; color: var(--text-gray);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .page-btn:hover:not(.disabled) { background: white; color: var(--primary); transform: translateY(-3px); }
+        .page-btn.active { background: var(--primary); color: white; box-shadow: 0 5px 15px var(--primary-glow); }
+        .page-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo" onclick="goBack()"><i class="fas fa-heart"></i> 爱心互助社区</div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <a href="points-record.html" class="btn-nav"><i class="fas fa-file-invoice"></i> 积分明细</a>
+        <button class="btn-nav" onclick="goBack()"><i class="fas fa-arrow-left"></i> 返回首页</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="points-banner">
+        <div class="points-info">
+            <h2>我的可用积分</h2>
+            <div class="points-value">
+                <span id="userPoints">...</span>
+                <span class="points-unit">分</span>
+            </div>
+        </div>
+        <div style="font-size: 80px; opacity: 0.8;">💎</div>
+    </div>
+
+    <div id="productsContainer" class="products-grid">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i><p>好礼加载中...</p></div>
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+</div>
+
+<div class="modal" id="exchangeModal">
+    <div class="modal-content">
+        <button class="btn-close" onclick="closeExchangeModal()"><i class="fas fa-times"></i></button>
+
+        <div class="modal-header">
+            <img id="modalProductImage" src="" class="modal-img">
+            <div class="modal-title" id="modalProductName">商品名称</div>
+            <div class="modal-price"><i class="fas fa-coins"></i> <span id="modalProductPoints">0</span></div>
+        </div>
+
+        <form id="exchangeForm">
+            <div class="form-group">
+                <label class="form-label">兑换数量</label>
+                <div class="quantity-box">
+                    <button type="button" class="btn-qty" id="btnDecrease" onclick="changeQuantity(-1)">-</button>
+                    <div class="qty-val" id="quantity">1</div>
+                    <button type="button" class="btn-qty" id="btnIncrease" onclick="changeQuantity(1)">+</button>
+                </div>
+            </div>
+
+            <div class="total-box">
+                <div style="font-size:12px; color:#9ca3af; margin-bottom:5px;">总计消耗</div>
+                <div class="total-val" id="totalPoints">0</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">收货人</label>
+                <input type="text" class="form-input" id="receiverName" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">联系电话</label>
+                <input type="tel" class="form-input" id="receiverPhone" pattern="[0-9]{11}" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">收货地址</label>
+                <input type="text" class="form-input" id="receiverAddress" required>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeExchangeModal()">取消</button>
+                <button type="submit" class="btn-confirm">立即兑换</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let volunteerId = null;
+    let userPoints = 0;
+    let currentPage = 1;
+    let currentProduct = null;
+    let quantity = 1;
+
+    window.onload = function() {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        volunteerId = userInfo.id;
+        if (!volunteerId) { alert('请先登录'); window.location.href = 'login.html'; return; }
+
+        document.getElementById('userPoints').textContent = userInfo.totalPoints || 0;
+        document.getElementById('receiverName').value = userInfo.realName || '';
+        document.getElementById('receiverPhone').value = userInfo.phone || '';
+        document.getElementById('receiverAddress').value = userInfo.address || '';
+
+        loadUserPoints();
+        loadProducts();
+    };
+
+    async function loadUserPoints() {
+        try {
+            const res = await fetch(`http://localhost:8080/api/service-record/stats/${volunteerId}`);
+            const r = await res.json();
+            if(r.code === 200) {
+                userPoints = r.data.totalPoints || 0;
+                document.getElementById('userPoints').textContent = userPoints;
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                userInfo.totalPoints = userPoints;
+                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    async function loadProducts() {
+        const container = document.getElementById('productsContainer');
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>好礼加载中...</p></div>';
+        try {
+            const res = await fetch(`http://localhost:8080/api/product/list?pageNum=${currentPage}&pageSize=12&status=1`);
+            const r = await res.json();
+            if (r.code === 200) {
+                displayProducts(r.data.records);
+                displayPagination(r.data);
+            } else {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>加载失败</p></div>';
+            }
+        } catch (error) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-wifi"></i><p>网络异常</p></div>';
+        }
+    }
+
+    function displayProducts(products) {
+        const container = document.getElementById('productsContainer');
+        if (products.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无商品</p></div>';
+            return;
+        }
+
+        container.innerHTML = products.map((p, index) => {
+            const outOfStock = p.stock <= 0;
+            const stockBadge = outOfStock
+                ? '<span class="stock-badge badge-out">已抢光</span>'
+                : `<span class="stock-badge badge-stock">库存 ${p.stock}</span>`;
+
+            return `
+                <div class="product-card" style="animation: fadeIn 0.6s ease backwards; animation-delay: ${index * 0.05}s" onclick="showExchangeModal(${p.id})">
+                    <div class="product-image-wrapper">
+                        <img src="${p.image || 'https://picsum.photos/400/400'}" class="product-image" onerror="this.src='https://picsum.photos/400/400'">
+                        ${stockBadge}
+                    </div>
+                    <div class="product-content">
+                        <h3>${p.name}</h3>
+                        <div class="product-desc">${p.description || '暂无描述'}</div>
+                        <div class="product-footer">
+                            <div class="price-tag"><i class="fas fa-coins"></i> ${p.price}</div>
+                            <button class="btn-exchange" onclick="event.stopPropagation(); showExchangeModal(${p.id})" ${outOfStock ? 'disabled' : ''}>
+                                ${outOfStock ? '补货中' : '立即兑换'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function displayPagination(pageData) {
+        const pagination = document.getElementById('pagination');
+        const totalPages = pageData.pages;
+        if (totalPages <= 1) { pagination.innerHTML = ''; return; }
+        let html = `<button class="page-btn ${currentPage===1?'disabled':''}" onclick="changePage(${currentPage-1})"><i class="fas fa-chevron-left"></i></button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage-2 && i <= currentPage+2)) {
+                html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+            } else if (i === currentPage-3 || i === currentPage+3) {
+                html += `<span class="page-btn disabled">...</span>`;
+            }
+        }
+        html += `<button class="page-btn ${currentPage===totalPages?'disabled':''}" onclick="changePage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`;
+        pagination.innerHTML = html;
+    }
+
+    function changePage(page) { if(page<1) return; currentPage=page; loadProducts(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+    async function showExchangeModal(productId) {
+        try {
+            const res = await fetch(`http://localhost:8080/api/product/${productId}`);
+            const result = await res.json();
+            if (result.code === 200) {
+                currentProduct = result.data;
+                if (currentProduct.stock <= 0) return alert('抱歉，该商品已售罄');
+
+                document.getElementById('modalProductImage').src = currentProduct.image || '';
+                document.getElementById('modalProductName').textContent = currentProduct.name;
+                document.getElementById('modalProductPoints').textContent = currentProduct.price;
+
+                quantity = 1;
+                document.getElementById('quantity').textContent = quantity;
+                updateTotalPoints();
+                updateQuantityButtons();
+                document.getElementById('exchangeModal').classList.add('active');
+            }
+        } catch (error) { alert('获取详情失败'); }
+    }
+
+    function closeExchangeModal() { document.getElementById('exchangeModal').classList.remove('active'); }
+
+    function changeQuantity(delta) {
+        quantity += delta;
+        if (quantity < 1) quantity = 1;
+        if (quantity > currentProduct.stock) quantity = currentProduct.stock;
+        document.getElementById('quantity').textContent = quantity;
+        updateTotalPoints();
+        updateQuantityButtons();
+    }
+
+    function updateTotalPoints() { document.getElementById('totalPoints').textContent = currentProduct.price * quantity; }
+    function updateQuantityButtons() {
+        document.getElementById('btnDecrease').disabled = quantity <= 1;
+        document.getElementById('btnIncrease').disabled = quantity >= currentProduct.stock;
+    }
+
+    document.getElementById('exchangeForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const totalPoints = currentProduct.price * quantity;
+        if (userPoints < totalPoints) return alert('积分不足！');
+
+        const data = {
+            volunteerId: volunteerId,
+            productId: currentProduct.id,
+            quantity: quantity,
+            receiverName: document.getElementById('receiverName').value,
+            receiverPhone: document.getElementById('receiverPhone').value,
+            receiverAddress: document.getElementById('receiverAddress').value
+        };
+
+        try {
+            const res = await fetch('http://localhost:8080/api/product/exchange', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(data)
+            });
+            const r = await res.json();
+            if(r.code === 200) {
+                alert('兑换成功！');
+                loadUserPoints(); loadProducts(); closeExchangeModal();
+            } else { alert(r.msg); }
+        } catch (error) { alert('网络错误'); }
+    });
+
+    function goBack() { window.location.href = 'volunteer-home.html'; }
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>时长管理 - 组织者工作台</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f7fa; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0 30px; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+        .btn-back { background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 30px; }
+        .page-header { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px; }
+        .activities-table { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        thead th { background: #f8f9fa; padding: 15px; text-align: left; color: #666; }
+        tbody td { padding: 18px 15px; background: #f9f9f9; }
+        .status-badge { padding: 5px 12px; border-radius: 12px; font-size: 12px; }
+        .status-ongoing { background: #d4edda; color: #155724; }
+        .status-ended { background: #f8d7da; color: #721c24; }
+        .btn-manage { padding: 8px 15px; background: #11998e; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="logo"> <i class="fas fa-clock"></i> 时长管理</div>
+    <a href="organizer-home.html" class="btn-back"><i class="fas fa-arrow-left"></i> 返回工作台</a>
+</div>
+
+<div class="container">
+    <div class="page-header">
+        <h2>选择活动</h2>
+        <p style="color:#666; margin-top:5px;">请选择一个活动来管理志愿者的签到和时长</p>
+    </div>
+
+    <div class="activities-table">
+        <table id="tableContainer">
+            <thead>
+            <tr>
+                <th>活动名称</th>
+                <th>活动时间</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="listBody">
+            <tr><td colspan="4" style="text-align:center; padding:30px;">加载中...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        // 加载该组织者的活动
+        fetch(`http://localhost:8080/api/activity/organizer/${userInfo.id}?pageSize=100`)
+            .then(res => res.json())
+            .then(result => {
+                const list = result.data.records.filter(a => a.status === 1 || a.status === 2 || a.status === 3); // 只显示招募中/进行中/已结束
+                renderTable(list);
+            });
+    };
+
+    function renderTable(list) {
+        const tbody = document.getElementById('listBody');
+        if(list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">暂无活动</td></tr>';
+            return;
+        }
+        tbody.innerHTML = list.map(item => `
+                <tr>
+                    <td>${item.title}</td>
+                    <td>${item.activityStartTime.replace('T', ' ')}</td>
+                    <td><span class="status-badge ${getStatusClass(item.status)}">${getStatusText(item.status)}</span></td>
+                    <td>
+                        <button class="btn-manage" onclick="location.href='organizer-checkin.html?activityId=${item.id}&title=${encodeURIComponent(item.title)}'">
+                            <i class="fas fa-tasks"></i> 管理签到/时长
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+    }
+    function getStatusClass(s) { return s===2?'status-ongoing':(s===3?'status-ended':'status-ongoing'); }
+    function getStatusText(s) { return {1:'招募中', 2:'进行中', 3:'已结束'}[s] || '未知'; }
+</script>
+</body>
+</html>

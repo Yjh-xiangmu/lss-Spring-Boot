@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>时长审核</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; margin:0; }
+        .navbar { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 0 30px; height: 70px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; padding: 15px; background: #f8f9fa; color: #666; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+
+        .btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; color: white; margin-right: 5px; font-size: 12px; }
+        .btn-confirm { background: #28a745; } /* 绿色：确认发放 */
+        .btn-edit { background: #17a2b8; } /* 蓝色：修正 */
+        .btn-disabled { background: #ccc; cursor: not-allowed; }
+
+        .status-done { color: #28a745; font-weight: bold; }
+        .status-wait { color: #ffc107; font-weight: bold; }
+        .btn-back { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div style="font-size: 20px; font-weight: bold;"><i class="fas fa-clipboard-check"></i> 时长审核与发放</div>
+    <a href="organizer-hours.html" class="btn-back">返回列表</a>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2 id="pageTitle">加载中...</h2>
+        <p style="color:#666; font-size:14px; margin-top:5px;">请核对志愿者的签到记录，确认无误后点击“发放”</p>
+        <table>
+            <thead>
+            <tr>
+                <th>志愿者</th>
+                <th>签到时间</th>
+                <th>签退时间</th>
+                <th>系统计算时长</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="listBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const activityId = urlParams.get('activityId');
+    document.getElementById('pageTitle').innerText = decodeURIComponent(urlParams.get('title') || '活动详情');
+
+    window.onload = loadData;
+
+    async function loadData() {
+        const res = await fetch(`http://localhost:8080/api/enrollment/activity/${activityId}`);
+        const result = await res.json();
+        // 只显示审核通过的报名记录
+        renderTable(result.data.filter(i => i.auditStatus === 1));
+    }
+
+    function renderTable(list) {
+        document.getElementById('listBody').innerHTML = list.map(item => {
+            // 判断是否已经发放过奖励
+            const isRewarded = item.rewardStatus === 1;
+            // 判断是否有完整的签到记录
+            const hasRecord = item.signInTime && item.signOutTime;
+
+            let statusHtml = '<span style="color:#999">未完成</span>';
+            if(isRewarded) statusHtml = '<span class="status-done">✅ 已发放</span>';
+            else if(hasRecord) statusHtml = '<span class="status-wait">⏳ 待确认</span>';
+            else if(item.signInTime) statusHtml = '<span style="color:#17a2b8">进行中...</span>';
+
+            return `
+                <tr>
+                    <td>${item.volunteerName}</td>
+                    <td>${formatTime(item.signInTime) || '-'}</td>
+                    <td>${formatTime(item.signOutTime) || '-'}</td>
+                    <td><strong style="font-size:16px; color:#333;">${item.actualHours || 0}</strong> 小时</td>
+                    <td>${statusHtml}</td>
+                    <td>
+                        ${!isRewarded ? `
+                            <button class="btn btn-confirm ${!hasRecord ? 'btn-disabled' : ''}"
+                                    onclick="${hasRecord ? `confirmHours(${item.id})` : ''}">
+                                <i class="fas fa-check"></i> 确认发放
+                            </button>
+                            <button class="btn btn-edit" onclick="editHours(${item.id})">
+                                <i class="fas fa-pen"></i> 修正时长
+                            </button>
+                        ` : '<span style="color:#ccc; font-size:12px;">无法操作</span>'}
+                    </td>
+                </tr>
+            `}).join('');
+    }
+
+    // 确认发放时长
+    async function confirmHours(id) {
+        if(!confirm('确认发放该时长？一旦发放将计入志愿者账户。')) return;
+        const res = await fetch(`http://localhost:8080/api/enrollment/confirmHours/${id}`, { method: 'PUT' });
+        const data = await res.json();
+        if(data.code === 200) {
+            alert('发放成功！');
+            loadData();
+        } else {
+            alert(data.message);
+        }
+    }
+
+    // 修正时长（如果志愿者忘签退，或者时间不对）
+    async function editHours(id) {
+        const hours = prompt('请输入正确的服务时长（小时）：');
+        if(hours) {
+            await fetch(`http://localhost:8080/api/enrollment/updateHours`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ id: id, hours: parseFloat(hours) })
+            });
+            loadData();
+        }
+    }
+
+    function formatTime(t) { return t ? t.replace('T', ' ').substring(11, 16) : null; }
+</script>
+</body>
+</html>

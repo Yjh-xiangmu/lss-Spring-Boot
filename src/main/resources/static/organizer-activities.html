@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活动管理 - 组织者工作台</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f7fa; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0 30px; height: 70px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3); }
+        .btn-back { background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .btn-back:hover { background: white; color: #667eea; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 30px; }
+        .page-header { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .page-title { font-size: 24px; color: #333; }
+        .btn-create { padding: 12px 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 15px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .filter-bar { background: white; padding: 20px 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px; display: flex; gap: 15px; }
+        .search-input, .filter-select { padding: 10px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: all 0.3s; flex: 1; }
+        .activities-table { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        thead th { background: #f8f9fa; padding: 15px; text-align: left; font-size: 14px; color: #666; font-weight: 500; }
+        tbody tr { background: #f9f9f9; transition: all 0.3s; }
+        tbody tr:hover { background: #f0f4ff; transform: translateX(5px); }
+        tbody td { padding: 18px 15px; font-size: 14px; color: #333; }
+        .status-badge { padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .status-draft { background: #e0e0e0; color: #666; }
+        .status-recruiting { background: #d1ecf1; color: #0c5460; }
+        .status-ongoing { background: #d4edda; color: #155724; }
+        .status-ended { background: #f8d7da; color: #721c24; }
+        .status-canceled { background: #eee; color: #999; text-decoration: line-through; }
+        .action-buttons { display: flex; gap: 8px; }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
+        .btn-edit { background: #667eea; color: white; }
+        .btn-delete { background: #ff6b6b; color: white; }
+        .btn-publish { background: #11998e; color: white; }
+        .btn-cancel-act { background: #999; color: white; }
+        .btn-action:hover { transform: scale(1.05); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 25px; padding: 40px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; color: #333; font-size: 14px; font-weight: 500; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: all 0.3s; font-family: inherit; }
+        .form-textarea { resize: vertical; min-height: 120px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .modal-footer { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-submit { flex: 1; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: bold; }
+        .btn-cancel { flex: 1; padding: 14px; background: #f5f5f5; color: #666; border: none; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: bold; }
+        .loading, .empty-state { text-align: center; padding: 80px 20px; }
+        .btn-close { width: 40px; height: 40px; border-radius: 50%; background: #f5f5f5; border: none; cursor: pointer; font-size: 20px; color: #666; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="logo"><i class="fas fa-user-tie"></i> 组织者工作台</div>
+    <button class="btn-back" onclick="location.href='organizer-home.html'"><i class="fas fa-arrow-left"></i> 返回工作台</button>
+</div>
+
+<div class="container">
+    <div class="page-header">
+        <div class="page-title" id="pageMainTitle">活动管理</div>
+        <button class="btn-create" id="btnCreateActivity" onclick="showCreateModal()"><i class="fas fa-plus"></i> 创建活动</button>
+    </div>
+
+    <div class="filter-bar">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索活动..." onkeypress="if(event.key==='Enter') searchActivities()">
+        <select class="filter-select" id="statusFilter" onchange="searchActivities()">
+            <option value="">全部状态</option>
+            <option value="0">草稿</option>
+            <option value="1">招募中</option>
+            <option value="2">进行中</option>
+            <option value="3">已结束</option>
+            <option value="4">已取消</option>
+        </select>
+        <button class="btn-create" onclick="searchActivities()"><i class="fas fa-search"></i> 搜索</button>
+    </div>
+
+    <div class="activities-table">
+        <div id="tableContainer">
+            <div class="loading">加载中...</div>
+        </div>
+        <div id="pagination" class="pagination" style="display: flex; justify-content: center; margin-top: 30px; gap: 10px;"></div>
+    </div>
+</div>
+
+<div class="modal" id="activityModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">创建活动</div>
+            <button class="btn-close" onclick="closeModal()">×</button>
+        </div>
+        <form id="activityForm">
+            <input type="hidden" id="activityId">
+            <div class="form-group"><label class="form-label">活动名称</label><input type="text" class="form-input" id="title" required></div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">类型</label>
+                    <select class="form-select" id="activityType" required>
+                        <option value="">加载中...</option>
+                    </select>
+                </div>
+                <div class="form-group"><label class="form-label">区域</label><input type="text" class="form-input" id="area" required></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">人数</label><input type="number" class="form-input" id="recruitCount" required></div>
+                <div class="form-group"><label class="form-label">时长</label><input type="number" class="form-input" id="estimatedHours" required step="0.5"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">积分</label><input type="number" class="form-input" id="rewardPoints" required></div>
+                <div class="form-group">
+                    <label class="form-label">需要审核</label>
+                    <select class="form-select" id="needAudit">
+                        <option value="0">否</option>
+                        <option value="1">是</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">报名开始</label><input type="datetime-local" class="form-input" id="signupStartTime" required></div>
+                <div class="form-group"><label class="form-label">报名结束</label><input type="datetime-local" class="form-input" id="signupEndTime" required></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">活动开始</label><input type="datetime-local" class="form-input" id="activityStartTime" required></div>
+                <div class="form-group"><label class="form-label">活动结束</label><input type="datetime-local" class="form-input" id="activityEndTime" required></div>
+            </div>
+            <div class="form-group"><label class="form-label">详情</label><textarea class="form-textarea" id="content" required></textarea></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal()">取消</button>
+                <button type="submit" class="btn-submit">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let organizerId = JSON.parse(localStorage.getItem('userInfo')||'{}').id;
+    let currentPage = 1, currentKeyword = '', currentStatus = '', editingId = null, savedEnrolledCount = 0;
+    let isAuditMode = false; // 是否为审核模式
+
+    // 页面加载顺序：检测模式 -> 获取动态类型 -> 拉取活动列表
+    window.onload = async function() {
+        if(!organizerId) return location.href='login.html';
+
+        // 重点修改：检测是否为审核模式
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('mode') === 'audit') {
+            isAuditMode = true;
+            document.getElementById('pageMainTitle').textContent = '请选择要审核的活动';
+            document.getElementById('btnCreateActivity').style.display = 'none'; // 隐藏创建按钮
+            currentStatus = '1'; // 默认查询“招募中”的活动
+            document.getElementById('statusFilter').value = '1';
+        }
+
+        await loadActivityTypes();
+        loadActivities();
+    };
+
+    // 获取动态活动类型
+    async function loadActivityTypes() {
+        try {
+            const res = await fetch('http://localhost:8080/api/activity/type-list');
+            const result = await res.json();
+            const select = document.getElementById('activityType');
+            select.innerHTML = '<option value="">请选择</option>';
+            if (result.code === 200) {
+                result.data.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.typeName;
+                    option.textContent = type.typeName;
+                    select.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('加载活动类型失败:', error);
+            document.getElementById('activityType').innerHTML = '<option value="">加载失败</option>';
+        }
+    }
+
+    // 获取活动列表
+    async function loadActivities() {
+        const container = document.getElementById('tableContainer');
+        let url = `http://localhost:8080/api/activity/organizer/${organizerId}?pageNum=${currentPage}&pageSize=10`;
+        if (currentKeyword) url += `&keyword=${encodeURIComponent(currentKeyword)}`;
+        if (currentStatus) url += `&status=${currentStatus}`;
+
+        try {
+            const res = await fetch(url);
+            const result = await res.json();
+
+            if (result.code === 200) {
+                displayActivities(result.data.records);
+                displayPagination(result.data);
+            } else {
+                container.innerHTML = '<div class="empty-state">加载失败</div>';
+            }
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = '<div class="empty-state">网络错误</div>';
+        }
+    }
+
+    // 渲染活动表格
+    function displayActivities(list) {
+        const container = document.getElementById('tableContainer');
+        if (!list || list.length === 0) {
+            container.innerHTML = '<div class="empty-state">暂无符合条件的活动</div>';
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = `
+            <table>
+                <thead><tr><th>活动名称</th><th>类型</th><th>开始时间</th><th>进度</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                    ${list.map(act => `
+                        <tr>
+                            <td>${act.title}</td>
+                            <td>${act.activityType}</td>
+                            <td>${formatDate(act.activityStartTime)}</td>
+                            <td>${act.enrolledCount||0}/${act.recruitCount}</td>
+                            <td><span class="status-badge ${getStatusClass(act.status)}">${getStatusText(act.status)}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    ${(!isAuditMode && act.status !== 4) ? `<button class="btn-action btn-edit" onclick="editActivity(${act.id})">编辑</button>` : ''}
+
+                                    ${(act.status === 1 || act.status === 2) ? `
+                                        <button class="btn-action" style="background:#ffc107; color:black;"
+                                            onclick="location.href='organizer-audit.html?activityId=${act.id}&title=${encodeURIComponent(act.title)}'">去审核名单</button>
+                                        ${!isAuditMode ? `<button class="btn-action btn-cancel-act" onclick="cancelActivity(${act.id})">取消</button>` : ''}
+                                    ` : ''}
+
+                                    ${(!isAuditMode && act.status === 0) ? `
+                                        <button class="btn-action btn-publish" onclick="publishActivity(${act.id})">发布</button>
+                                        <button class="btn-action btn-delete" onclick="deleteActivity(${act.id})">删除</button>
+                                    ` : ''}
+
+                                    ${act.status === 4 ? '<span style="color:#999;font-size:12px;">已取消</span>' : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    // 渲染分页组件
+    function displayPagination(data) {
+        const pagination = document.getElementById('pagination');
+        if (!pagination) return;
+
+        let html = '';
+        if (data.current > 1) {
+            html += `<button class="btn-action" style="background:#fff; color:#333; border: 1px solid #ccc; padding: 6px 12px; cursor: pointer;" onclick="changePage(${data.current - 1})">上一页</button>`;
+        }
+        html += `<span style="line-height: 28px; font-size: 14px; color: #666; margin: 0 10px;"> 第 ${data.current} / ${data.pages} 页 (共 ${data.total} 条) </span>`;
+        if (data.current < data.pages) {
+            html += `<button class="btn-action" style="background:#fff; color:#333; border: 1px solid #ccc; padding: 6px 12px; cursor: pointer;" onclick="changePage(${data.current + 1})">下一页</button>`;
+        }
+        pagination.innerHTML = html;
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        loadActivities();
+    }
+
+    // 业务功能操作
+    async function cancelActivity(id) {
+        if(!confirm('确定要取消该活动吗？取消后志愿者将无法签到。')) return;
+        const res = await fetch(`http://localhost:8080/api/activity/cancel/${id}`, { method: 'PUT' });
+        const data = await res.json();
+        if(data.code === 200) { alert('活动已取消'); loadActivities(); }
+        else alert(data.message);
+    }
+
+    async function deleteActivity(id) {
+        if(!confirm('确定删除草稿？')) return;
+        await fetch(`http://localhost:8080/api/activity/${id}`, { method: 'DELETE' });
+        loadActivities();
+    }
+
+    async function publishActivity(id) {
+        if(!confirm('确定发布？')) return;
+        await fetch(`http://localhost:8080/api/activity/publish/${id}`, { method: 'PUT' });
+        loadActivities();
+    }
+
+    // 模态框及表单处理
+    function closeModal() {
+        document.getElementById('activityModal').classList.remove('active');
+        document.getElementById('activityForm').reset();
+        editingId = null;
+    }
+
+    function showCreateModal() {
+        editingId = null;
+        savedEnrolledCount = 0;
+        document.getElementById('modalTitle').textContent = '创建活动';
+        document.getElementById('activityForm').reset();
+        document.getElementById('activityModal').classList.add('active');
+    }
+
+    async function editActivity(id) {
+        editingId = id;
+        document.getElementById('modalTitle').textContent = '编辑活动';
+        const res = await fetch(`http://localhost:8080/api/activity/${id}`);
+        const r = await res.json();
+        const a = r.data;
+        savedEnrolledCount = a.enrolledCount || 0;
+
+        document.getElementById('activityId').value=a.id;
+        document.getElementById('title').value=a.title;
+        document.getElementById('activityType').value=a.activityType;
+        document.getElementById('area').value=a.area;
+        document.getElementById('recruitCount').value=a.recruitCount;
+        document.getElementById('estimatedHours').value=a.estimatedHours;
+        document.getElementById('rewardPoints').value=a.rewardPoints;
+        document.getElementById('needAudit').value=a.needAudit;
+        document.getElementById('signupStartTime').value=formatDateTimeForInput(a.signupStartTime);
+        document.getElementById('signupEndTime').value=formatDateTimeForInput(a.signupEndTime);
+        document.getElementById('activityStartTime').value=formatDateTimeForInput(a.activityStartTime);
+        document.getElementById('activityEndTime').value=formatDateTimeForInput(a.activityEndTime);
+        document.getElementById('content').value=a.content;
+
+        document.getElementById('activityModal').classList.add('active');
+    }
+
+    document.getElementById('activityForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const d = {
+            title: document.getElementById('title').value,
+            activityType: document.getElementById('activityType').value,
+            area: document.getElementById('area').value,
+            recruitCount: document.getElementById('recruitCount').value,
+            estimatedHours: document.getElementById('estimatedHours').value,
+            rewardPoints: document.getElementById('rewardPoints').value,
+            needAudit: document.getElementById('needAudit').value,
+            signupStartTime: document.getElementById('signupStartTime').value + ':00',
+            signupEndTime: document.getElementById('signupEndTime').value + ':00',
+            activityStartTime: document.getElementById('activityStartTime').value + ':00',
+            activityEndTime: document.getElementById('activityEndTime').value + ':00',
+            content: document.getElementById('content').value,
+            organizerId: organizerId,
+            status: 0,
+            enrolledCount: editingId ? savedEnrolledCount : 0,
+            coverImage: 'https://picsum.photos/800/500?random=' + Date.now()
+        };
+        let url = 'http://localhost:8080/api/activity/create', method = 'POST';
+        if(editingId) { url = 'http://localhost:8080/api/activity/update'; method = 'PUT'; d.id = editingId; }
+
+        await fetch(url, { method: method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(d) });
+        closeModal();
+        loadActivities();
+    });
+
+    // 搜索及工具函数
+    function searchActivities() {
+        currentPage = 1;
+        currentKeyword=document.getElementById('searchInput').value;
+        currentStatus=document.getElementById('statusFilter').value;
+        loadActivities();
+    }
+
+    function getStatusClass(s) {
+        return {0:'status-draft',1:'status-recruiting',2:'status-ongoing',3:'status-ended',4:'status-canceled'}[s]||'';
+    }
+
+    function getStatusText(s) {
+        return {0:'草稿',1:'招募中',2:'进行中',3:'已结束',4:'已取消'}[s]||'未知';
+    }
+
+    function formatDate(t) {
+        return t ? t.split('T')[0] : '';
+    }
+
+    function formatDateTimeForInput(t) {
+        return t ? t.substring(0,16) : '';
+    }
+</script>
+</body>
+</html>

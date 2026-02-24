@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时长记录 - 爱心互助社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 导航栏 */
+        .navbar {
+            height: 70px; padding: 0 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 24px; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .btn-back {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 8px 20px; border-radius: 20px; cursor: pointer;
+            transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-back:hover { background: white; color: var(--primary); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        /* 统计卡片区域 */
+        .stats-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 40px; }
+
+        .stat-card {
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 30px; display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: 0.3s; animation: slideDown 0.5s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); background: rgba(255,255,255,0.9); }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stat-icon {
+            width: 60px; height: 60px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; font-size: 28px; color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .c-time .stat-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .c-star .stat-icon { background: linear-gradient(135deg, #f6d365, #fda085); }
+        .c-count .stat-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+        .stat-content h3 { font-size: 32px; font-weight: 800; margin-bottom: 5px; color: var(--text-dark); }
+        .stat-content p { font-size: 14px; color: var(--text-gray); font-weight: 500; }
+        .stars { color: #fbbf24; letter-spacing: 2px; }
+
+        /* 表格容器 (玻璃拟态) */
+        .main-content {
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            animation: fadeIn 0.8s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 表格样式 */
+        .records-table { width: 100%; border-collapse: separate; border-spacing: 0 15px; margin-top: -15px; }
+
+        .records-table thead th {
+            text-align: left; padding: 0 20px 15px;
+            font-size: 13px; color: var(--text-gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .records-table tbody tr {
+            background: rgba(255,255,255,0.5); transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .records-table tbody tr:hover {
+            transform: scale(1.01); background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); z-index: 10; position: relative;
+        }
+
+        .records-table td { padding: 20px; border: none; font-size: 14px; color: var(--text-dark); }
+        .records-table td:first-child { border-top-left-radius: 16px; border-bottom-left-radius: 16px; }
+        .records-table td:last-child { border-top-right-radius: 16px; border-bottom-right-radius: 16px; }
+
+        .record-id { color: var(--text-gray); font-family: monospace; }
+        .record-hours { font-weight: 700; color: var(--primary); font-size: 16px; }
+        .activity-name { font-weight: 600; }
+
+        /* 状态徽章 */
+        .record-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge-system { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; } /* 系统 */
+        .badge-makeup { background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; } /* 补录 */
+
+        .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .status-pending { background: #fffbeb; color: #d97706; }
+        .status-approved { background: #ecfdf5; color: #059669; }
+        .status-rejected { background: #fef2f2; color: #dc2626; }
+
+        /* 分页器 */
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; }
+        .page-btn {
+            width: 40px; height: 40px; border-radius: 12px; border: none;
+            background: rgba(255,255,255,0.5); backdrop-filter: blur(5px);
+            cursor: pointer; transition: 0.3s; font-weight: 600; color: var(--text-gray);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .page-btn:hover:not(.disabled) { background: white; color: var(--primary); transform: translateY(-3px); }
+        .page-btn.active { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4); }
+        .page-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* 加载与空状态 */
+        .loading { text-align: center; padding: 60px; color: var(--text-gray); }
+        .loading i { font-size: 40px; margin-bottom: 15px; color: var(--primary); }
+        .empty-state { text-align: center; padding: 80px; }
+        .empty-state i { font-size: 60px; color: #cbd5e1; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="logo" onclick="goBack()"><i class="fas fa-heart"></i> 爱心互助社区</div>
+    <button class="btn-back" onclick="goBack()"><i class="fas fa-arrow-left"></i> 返回首页</button>
+</div>
+
+<div class="container">
+    <div class="stats-section">
+        <div class="stat-card c-time">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-content">
+                <h3><span id="totalHours">0</span>h</h3>
+                <p>累计服务时长</p>
+            </div>
+        </div>
+        <div class="stat-card c-star">
+            <div class="stat-icon"><i class="fas fa-medal"></i></div>
+            <div class="stat-content">
+                <h3 class="stars" id="starLevel">★★☆☆☆</h3>
+                <p>志愿者荣誉星级</p>
+            </div>
+        </div>
+        <div class="stat-card c-count">
+            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-content">
+                <h3><span id="serviceCount">0</span>次</h3>
+                <p>参与活动次数</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2 style="margin-bottom: 30px; font-size: 20px; font-weight: 700;">📜 服务时长明细</h2>
+        <div id="recordsContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i><p>数据加载中...</p></div>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+</div>
+
+<script>
+    let volunteerId = null;
+    let currentPage = 1;
+
+    window.onload = function() {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        volunteerId = userInfo.id;
+        if (!volunteerId) { alert('请先登录'); window.location.href = 'login.html'; return; }
+        loadStats();
+        loadRecords();
+    };
+
+    async function loadStats() {
+        try {
+            const response = await fetch(`http://localhost:8080/api/service-record/stats/${volunteerId}`);
+            const result = await response.json();
+            if (result.code === 200) {
+                const stats = result.data;
+                document.getElementById('totalHours').textContent = stats.totalHours || 0;
+                document.getElementById('serviceCount').textContent = stats.serviceCount || 0;
+
+                // 渲染星级
+                const hours = parseFloat(stats.totalHours || 0);
+                let level = Math.min(5, Math.floor(hours / 10)); // 修正为每10小时1星
+                if(level > 5) level = 5;
+                if(level < 0) level = 0;
+                let starHtml = '';
+                for(let i=0; i<level; i++) starHtml += '★';
+                for(let i=level; i<5; i++) starHtml += '☆';
+                document.getElementById('starLevel').textContent = starHtml;
+            }
+        } catch (error) { console.error(error); }
+    }
+
+    async function loadRecords() {
+        const container = document.getElementById('recordsContainer');
+        try {
+            const response = await fetch(`http://localhost:8080/api/service-record/list?volunteerId=${volunteerId}&pageNum=${currentPage}&pageSize=10`);
+            const result = await response.json();
+            if (result.code === 200) {
+                displayRecords(result.data.records);
+                displayPagination(result.data);
+            } else {
+                container.innerHTML = '<div class="empty-state">加载失败</div>';
+            }
+        } catch (error) { container.innerHTML = '<div class="empty-state">网络错误</div>'; }
+    }
+
+    function displayRecords(records) {
+        const container = document.getElementById('recordsContainer');
+        if (records.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无时长记录</p></div>`;
+            return;
+        }
+
+        const tableHtml = `
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>记录编号</th>
+                        <th>活动名称</th>
+                        <th>服务日期</th>
+                        <th>时长</th>
+                        <th>类型</th>
+                        <th>审核状态</th>
+                        <th>审核人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${records.map(record => `
+                        <tr>
+                            <td><span class="record-id">#${record.id}</span></td>
+                            <td class="activity-name">${record.activityName || record.remark || '未知活动'}</td>
+                            <td>${formatDate(record.serviceDate)}</td>
+                            <td><span class="record-hours">+${record.serviceHours}h</span></td>
+                            <td><span class="record-badge ${record.recordType === 1 ? 'badge-system' : 'badge-makeup'}">${record.recordType === 1 ? '系统结算' : '人工补录'}</span></td>
+                            <td><span class="status-badge ${getStatusClass(record.auditStatus)}">${getStatusText(record.auditStatus)}</span></td>
+                            <td style="color:var(--text-gray)">${record.auditor || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        container.innerHTML = tableHtml;
+    }
+
+    function getStatusClass(status) { return {0:'status-pending', 1:'status-approved', 2:'status-rejected'}[status] || ''; }
+    function getStatusText(status) { return {0:'待审核', 1:'已通过', 2:'已拒绝'}[status] || '未知'; }
+
+    function displayPagination(pageData) {
+        const pagination = document.getElementById('pagination');
+        if (pageData.pages <= 1) { pagination.innerHTML = ''; return; }
+        let html = `<button class="page-btn ${currentPage===1?'disabled':''}" onclick="changePage(${currentPage-1})"><i class="fas fa-chevron-left"></i></button>`;
+        for (let i = 1; i <= pageData.pages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                html += `<span class="page-btn disabled">...</span>`;
+            }
+        }
+        html += `<button class="page-btn ${currentPage===pageData.pages?'disabled':''}" onclick="changePage(${currentPage+1})"><i class="fas fa-chevron-right"></i></button>`;
+        pagination.innerHTML = html;
+    }
+
+    function changePage(page) { if(page<1) return; currentPage=page; loadRecords(); window.scrollTo(0,0); }
+    function goBack() { window.location.href = 'volunteer-home.html'; }
+    function formatDate(d) { if(!d) return ''; const date = new Date(d); return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`; }
+</script>
+</body>
+</html>

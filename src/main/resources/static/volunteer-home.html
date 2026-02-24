@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>志愿者工作台 - 爱心互助社区</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            /* 【高级感核心】动态流光背景 */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ================= 侧边栏 (深色高级质感) ================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(15, 23, 42, 0.85); /* 深蓝半透明 */
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 20px;
+            display: flex; flex-direction: column;
+            color: white;
+            z-index: 100;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        }
+
+        .brand {
+            font-size: 22px; font-weight: 700;
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 50px; letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+        }
+        .brand i { color: #FF6B6B; }
+
+        .menu { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .menu-item {
+            padding: 14px 20px; border-radius: 16px;
+            cursor: pointer; color: #94a3b8; font-weight: 500;
+            display: flex; align-items: center; gap: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; overflow: hidden;
+        }
+
+        /* 菜单悬停发光效果 */
+        .menu-item:hover { color: white; background: rgba(255,255,255,0.1); }
+        .menu-item.active {
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            box-shadow: 0 5px 20px var(--primary-glow);
+        }
+        .menu-item i { width: 20px; text-align: center; font-size: 18px; }
+
+        .user-profile {
+            background: rgba(255,255,255,0.1); border-radius: 16px;
+            padding: 15px; display: flex; align-items: center; gap: 12px;
+            margin-top: auto; cursor: pointer; transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-profile:hover { background: rgba(255,255,255,0.2); }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ================= 主内容区 (玻璃拟态) ================= */
+        .main-content {
+            flex: 1; padding: 30px 40px; overflow-y: auto;
+            position: relative;
+        }
+
+        /* 顶部状态栏 */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px;
+        }
+        .header-title h1 { font-size: 28px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header-title p { color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 5px; }
+
+        .header-actions button {
+            width: 45px; height: 45px; border-radius: 50%;
+            border: none; background: rgba(255,255,255,0.2);
+            color: white; font-size: 18px; cursor: pointer;
+            backdrop-filter: blur(5px); transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .header-actions button:hover { background: white; color: var(--primary); transform: rotate(15deg); }
+
+        /* 数据卡片组 */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 40px;
+        }
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 25px;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.9);
+        }
+
+        /* 卡片图标背景 */
+        .icon-bg {
+            width: 50px; height: 50px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin-bottom: 15px;
+        }
+        .c-star .icon-bg { background: linear-gradient(135deg, #fbbf24, #d97706); color: white; box-shadow: 0 5px 15px rgba(251, 191, 36, 0.4); }
+        .c-time .icon-bg { background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4); }
+        .c-points .icon-bg { background: linear-gradient(135deg, #34d399, #059669); color: white; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
+        .c-activity .icon-bg { background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+
+        .stat-label { font-size: 14px; color: var(--text-gray); font-weight: 600; }
+        .stat-value { font-size: 32px; font-weight: 800; color: var(--text-dark); margin: 5px 0; display: flex; align-items: baseline; }
+        .stat-value small { font-size: 14px; margin-left: 5px; font-weight: 500; }
+        .stat-action { font-size: 12px; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 5px; opacity: 0; transform: translateX(-10px); transition: 0.3s; }
+        .stat-card:hover .stat-action { opacity: 1; transform: translateX(0); }
+
+        /* 布局：左大右小 */
+        .dashboard-layout { display: grid; grid-template-columns: 2.5fr 1fr; gap: 30px; }
+
+        /* 通用面板样式 */
+        .panel {
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column;
+        }
+        .panel-title { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        /* 轮播图 (圆角悬浮) */
+        .carousel-wrap { height: 350px; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .slide {
+            position: absolute; inset: 0; opacity: 0; transition: 1s;
+            background-size: cover; background-position: center;
+        }
+        .slide.active { opacity: 1; transform: scale(1.05); animation: breathe 10s infinite alternate; }
+        @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        .slide-caption {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 40px 30px 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white;
+        }
+
+        /* 消息列表 */
+        .notice-list { display: flex; flex-direction: column; gap: 15px; }
+        .notice-item {
+            background: rgba(255,255,255,0.5); border-radius: 16px; padding: 15px;
+            display: flex; gap: 15px; align-items: flex-start; cursor: pointer;
+            transition: 0.3s; border-left: 4px solid transparent;
+        }
+        .notice-item:hover { background: white; transform: translateX(5px); border-left-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .notice-icon { min-width: 40px; height: 40px; border-radius: 12px; background: #e0e7ff; color: var(--primary); display: flex; align-items: center; justify-content: center; }
+        .notice-content h4 { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+        .notice-content span { font-size: 12px; color: var(--text-gray); }
+
+        /* 星星 */
+        .stars i { color: #fbbf24; font-size: 18px; margin-right: 2px; }
+        .stars .empty { color: #cbd5e1; }
+        /* ================= AI 助手悬浮窗 ================= */
+        .ai-fab {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+            z-index: 2000; transition: all 0.3s; animation: float 3s ease-in-out infinite;
+        }
+        .ai-fab:hover { transform: scale(1.1) rotate(10deg); }
+
+        .chat-window {
+            position: fixed; bottom: 100px; right: 30px;
+            width: 350px; height: 500px; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px); border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            display: flex; flex-direction: column;
+            z-index: 1999; transform: scale(0); transform-origin: bottom right;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; pointer-events: none;
+        }
+        .chat-window.active { transform: scale(1); opacity: 1; pointer-events: all; }
+
+        .chat-header {
+            padding: 20px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border-radius: 20px 20px 0 0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-body {
+            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+            background: #f8fafc;
+        }
+        .chat-footer {
+            padding: 15px; background: white; border-top: 1px solid #e2e8f0;
+            border-radius: 0 0 20px 20px; display: flex; gap: 10px;
+        }
+
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+        .msg-ai { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; color: #334155; }
+        .msg-user { align-self: flex-end; background: #6366f1; color: white; border-bottom-right-radius: 2px; }
+
+        .chat-input { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; }
+        .btn-send { background: #6366f1; color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; }
+
+        .typing { font-size: 12px; color: #94a3b8; margin-left: 5px; display: none; }
+    </style>
+
+
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">
+        <i class="fas fa-cube"></i> VOLUNTEER
+    </div>
+    <div class="menu">
+        <div class="menu-item active" onclick="location.href='volunteer-home.html'">
+            <i class="fas fa-th-large"></i> 仪表盘
+        </div>
+        <div class="menu-item" onclick="location.href='activity-hall.html'">
+            <i class="fas fa-compass"></i> 探索活动
+        </div>
+        <div class="menu-item" onclick="location.href='my-activities.html'">
+            <i class="fas fa-calendar-check"></i> 我的行程
+        </div>
+        <div class="menu-item" onclick="location.href='time-records.html'">
+            <i class="fas fa-chart-pie"></i> 时长统计
+        </div>
+        <div class="menu-item" onclick="location.href='points-mall.html'">
+            <i class="fas fa-shopping-bag"></i> 积分兑换
+        </div>
+        <div class="menu-item" onclick="location.href='showcase.html'">
+            <i class="fas fa-camera-retro"></i> 精彩瞬间
+        </div>
+    </div>
+    <div class="user-profile" onclick="location.href='profile.html'">
+        <div class="avatar"><img src="https://ui-avatars.com/api/?name=User&background=random" id="navAvatar"></div>
+        <div>
+            <div style="font-weight:600; font-size:14px;" id="sidebarName">User</div>
+            <div style="font-size:12px; color:#94a3b8;">查看个人资料</div>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="header">
+        <div class="header-title">
+            <h1 id="welcomeTitle">早安，志愿者</h1>
+            <p>✨ 今天也是闪闪发光的一天，准备好去温暖世界了吗？</p>
+        </div>
+        <div class="header-actions">
+            <button onclick="location.href='points-mall.html'" title="购物车"><i class="fas fa-shopping-cart"></i></button>
+            <button title="消息"><i class="far fa-bell"></i></button>
+            <button onclick="logout()" title="退出"><i class="fas fa-power-off"></i></button>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card c-star" onclick="location.href='profile.html'">
+            <div class="icon-bg"><i class="fas fa-medal"></i></div>
+            <div class="stat-label">荣誉星级</div>
+            <div class="stat-value" id="starLevelDisplay"><div class="stars"><i class="fas fa-star empty"></i></div></div>
+            <div class="stat-action">查看个人信息 <i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="stat-card c-time" onclick="location.href='time-records.html'">
+            <div class="icon-bg"><i class="fas fa-hourglass-half"></i></div>
+            <div class="stat-label">累计奉献</div>
+            <div class="stat-value"><span id="totalHours" class="counter">0</span><small>小时</small></div>
+            <div class="stat-action">查看明细 <i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="stat-card c-points" onclick="location.href='points-mall.html'">
+            <div class="icon-bg"><i class="fas fa-wallet"></i></div>
+            <div class="stat-label">可用积分</div>
+            <div class="stat-value"><span id="totalPoints" class="counter">0</span><small>分</small></div>
+            <div class="stat-action">去兑换好礼 <i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="stat-card c-activity" onclick="location.href='my-activities.html'">
+            <div class="icon-bg"><i class="fas fa-rocket"></i></div>
+            <div class="stat-label">近期活动</div>
+            <div class="stat-value"><span id="serviceCount" class="counter">0</span><small>次</small></div>
+            <div class="stat-action">管理行程 <i class="fas fa-arrow-right"></i></div>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <div class="panel">
+            <div class="panel-title">
+                <i class="fas fa-star" style="color:#f59e0b"></i> 精选推荐
+                <a href="activity-hall.html" style="margin-left:auto; font-size:13px; color:var(--primary); text-decoration:none;">更多活动 ></a>
+            </div>
+            <div class="carousel-wrap">
+                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <div class="slide-caption">
+                        <h3>🌿 城市绿肺守护计划</h3>
+                        <p>本周末，让我们一起为城市增添一抹绿色</p>
+                    </div>
+                </div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <div class="slide-caption">
+                        <h3>👴 温暖夕阳红 - 敬老院陪伴</h3>
+                        <p>倾听岁月的故事，传递温暖的陪伴</p>
+                    </div>
+                </div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <div class="slide-caption">
+                        <h3>📚 知识微光 - 乡村支教</h3>
+                        <p>用知识点亮孩子们的未来</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">
+                <i class="far fa-bell" style="color:#6366f1"></i> 最新动态
+            </div>
+            <div class="notice-list" id="noticeList">
+                <div class="empty-notice" style="text-align:center; padding:20px; color:#94a3b8;">
+                    <i class="fas fa-spinner fa-spin"></i> 加载中...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ai-fab" onclick="toggleChat()">
+    <i class="fas fa-robot"></i>
+</div>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i class="fas fa-robot"></i>
+            <div>
+                <div style="font-weight:bold; font-size:16px;">小爱助手</div>
+                <div style="font-size:11px; opacity:0.8;">DeepSeek 提供智力支持</div>
+            </div>
+        </div>
+        <i class="fas fa-times" style="cursor:pointer;" onclick="toggleChat()"></i>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <div class="msg msg-ai">你好呀！我是你的志愿助手小爱 👋<br>有什么可以帮你的吗？比如问问我“怎么赚积分”？</div>
+    </div>
+    <div class="typing" id="typingIndicator">小爱正在思考...</div>
+    <div class="chat-footer">
+        <input type="text" class="chat-input" id="chatInput" placeholder="输入问题..." onkeypress="if(event.keyCode===13) sendMsg()">
+        <button class="btn-send" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+<script>
+    // 模拟后端通知数据 (如果以后有后端接口，直接 fetch 替换这里)
+    const mockNotices = [
+        { title: "您的时长审核已通过", time: "10分钟前", type: "check" },
+        { title: "积分商城上架了新礼品", time: "2小时前", type: "gift" },
+        { title: "下周社区义诊活动开始招募", time: "1天前", type: "calendar" },
+        { title: "系统维护通知", time: "3天前", type: "cog" }
+    ];
+
+    window.onload = function() {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
+        if(userInfo.realName) {
+            document.getElementById('sidebarName').innerText = userInfo.realName;
+            document.getElementById('welcomeTitle').innerText = `${getTimeGreeting()}，${userInfo.realName}`;
+        }
+        if(userInfo.avatar) document.getElementById('navAvatar').src = userInfo.avatar;
+
+        loadRealtimeStats(userInfo.id);
+        renderNotices(); // 渲染通知
+        startCarousel(); // 启动轮播
+    };
+
+    async function loadRealtimeStats(id) {
+        if(!id) return;
+        try {
+            const res = await fetch(`http://localhost:8080/api/service-record/stats/${id}`);
+            const r = await res.json();
+            if(r.code === 200) {
+                const d = r.data;
+                animateValue("totalHours", 0, d.totalHours || 0, 1000);
+                animateValue("totalPoints", 0, d.totalPoints || 0, 1500);
+                animateValue("serviceCount", 0, d.serviceCount || 0, 1000);
+                renderStars(d.totalHours || 0);
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // 模拟加载通知
+    function renderNotices() {
+        const container = document.getElementById('noticeList');
+        container.innerHTML = ''; // 清空加载中
+
+        mockNotices.forEach((notice, index) => {
+            setTimeout(() => {
+                const iconMap = { 'check': 'fa-check-circle', 'gift': 'fa-gift', 'calendar': 'fa-calendar-alt', 'cog': 'fa-cog' };
+                const html = `
+                    <div class="notice-item" onclick="location.href='#'">
+                        <div class="notice-icon"><i class="fas ${iconMap[notice.type]}"></i></div>
+                        <div class="notice-content">
+                            <h4>${notice.title}</h4>
+                            <span>${notice.time}</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            }, index * 150); // 错落加载动画
+        });
+    }
+
+    function renderStars(hours) {
+        let stars = Math.floor(hours / 10);
+        if(stars > 5) stars = 5;
+        if(stars < 0) stars = 0;
+        let html = '<div class="stars">';
+        for(let i=0; i<stars; i++) html += '<i class="fas fa-star"></i>';
+        for(let i=stars; i<5; i++) html += '<i class="fas fa-star empty"></i>';
+        html += '</div>';
+        document.getElementById('starLevelDisplay').innerHTML = html;
+    }
+
+    function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        if(!obj) return;
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function startCarousel() {
+        let index = 0;
+        const slides = document.querySelectorAll('.slide');
+        setInterval(() => {
+            slides[index].classList.remove('active');
+            index = (index + 1) % slides.length;
+            slides[index].classList.add('active');
+        }, 5000);
+    }
+
+    function getTimeGreeting() {
+        const h = new Date().getHours();
+        if(h < 12) return "早安";
+        if(h < 18) return "下午好";
+        return "晚上好";
+    }
+
+    function logout() {
+        if(confirm('确认退出？')) { localStorage.removeItem('userInfo'); window.location.href = 'login.html'; }
+    }
+    // ... 原有的 JS 代码 ...
+
+    // AI 聊天逻辑
+    function toggleChat() {
+        document.getElementById('chatWindow').classList.toggle('active');
+    }
+
+    async function sendMsg() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        // 1. 显示用户消息
+        appendMsg('user', text);
+        input.value = '';
+
+        // 2. 显示正在输入
+        const typing = document.getElementById('typingIndicator');
+        typing.style.display = 'block';
+
+        // 3. 滚动到底部
+        const body = document.getElementById('chatBody');
+        body.scrollTop = body.scrollHeight;
+
+        try {
+            // 获取当前用户ID
+            const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
+            // 4. 调用后端 (带上 volunteerId)
+            const res = await fetch('http://localhost:8080/api/ai/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    message: text,
+                    volunteerId: userInfo.id // 【新增】把 ID 传给后端
+                })
+            });
+            const result = await res.json();
+
+            typing.style.display = 'none';
+
+            if (result.code === 200) {
+                // 5. 显示 AI 回复
+                // 简单的换行处理
+                const reply = result.data.replace(/\n/g, '<br>');
+                appendMsg('ai', reply);
+            } else {
+                appendMsg('ai', '出错了：' + result.msg);
+            }
+        } catch (e) {
+            typing.style.display = 'none';
+            appendMsg('ai', '网络好像有点问题...');
+        }
+    }
+
+    function appendMsg(role, text) {
+        const body = document.getElementById('chatBody');
+        const div = document.createElement('div');
+        div.className = `msg msg-${role}`;
+        div.innerHTML = text;
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+    }
+</script>
+</body>
+</html>

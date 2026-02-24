@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报名审核 - 组织者工作台</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f7fa; }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 0 30px; height: 70px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white;
+            padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .btn-back:hover { background: white; color: #667eea; }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+
+        .page-header {
+            background: white; padding: 25px; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .page-title h2 { font-size: 22px; color: #333; }
+        .page-title p { color: #666; font-size: 14px; margin-top: 5px; }
+
+        .audit-table {
+            background: white; border-radius: 15px; overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 15px; text-align: left; color: #666; font-weight: 600; }
+        td { padding: 15px; border-bottom: 1px solid #eee; color: #333; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: #fbfbfb; }
+
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; }
+        .status-0 { background: #fff3cd; color: #856404; } /* 待审核 */
+        .status-1 { background: #d4edda; color: #155724; } /* 已通过 */
+        .status-2 { background: #f8d7da; color: #721c24; } /* 已驳回 */
+
+        .btn-group { display: flex; gap: 10px; }
+        .btn-pass {
+            background: #28a745; color: white; border: none; padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .btn-reject {
+            background: #dc3545; color: white; border: none; padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .btn-pass:hover { background: #218838; }
+        .btn-reject:hover { background: #c82333; }
+        .btn-disabled { opacity: 0.5; cursor: not-allowed; background: #999; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 15px; width: 400px;
+            text-align: center;
+        }
+        .modal-textarea {
+            width: 100%; height: 100px; margin: 15px 0; padding: 10px;
+            border: 1px solid #ddd; border-radius: 8px; resize: none;
+        }
+        .modal-btns { display: flex; justify-content: center; gap: 15px; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="logo"><i class="fas fa-check-circle"></i> 报名审核系统</div>
+    <a href="organizer-activities.html" class="btn-back"><i class="fas fa-arrow-left"></i> 返回活动列表</a>
+</div>
+
+<div class="container">
+    <div class="page-header">
+        <div class="page-title">
+            <h2 id="pageTitle">正在加载活动信息...</h2>
+            <p>请对志愿者的报名申请进行审核</p>
+        </div>
+        <div style="font-size: 14px; color: #666;">
+            当前报名人数：<strong id="countDisplay" style="color: #667eea; font-size: 18px;">0</strong>
+        </div>
+    </div>
+
+    <div class="audit-table">
+        <table id="auditTable">
+            <thead>
+            <tr>
+                <th>志愿者</th>
+                <th>联系电话</th>
+                <th>报名时间</th>
+                <th>当前状态</th>
+                <th>审核备注</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody">
+            <tr><td colspan="6" style="text-align:center; padding: 30px; color: #999;">正在加载数据...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal" id="rejectModal">
+    <div class="modal-content">
+        <h3><i class="fas fa-exclamation-circle" style="color: #dc3545;"></i> 驳回申请</h3>
+        <p style="color: #666; margin-top: 5px;">请填写驳回原因（选填）</p>
+        <textarea class="modal-textarea" id="rejectReason" placeholder="例如：该活动需要专业急救技能证书..."></textarea>
+        <div class="modal-btns">
+            <button class="btn-back" onclick="closeModal()" style="background: #999; border:none;">取消</button>
+            <button class="btn-reject" onclick="confirmReject()">确认驳回</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentActivityId = null;
+    let currentRejectId = null;
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentActivityId = urlParams.get('activityId');
+        const title = urlParams.get('title');
+
+        if (!currentActivityId) {
+            alert('参数错误，请从活动列表进入');
+            window.location.href = 'organizer-activities.html';
+            return;
+        }
+
+        if(title) document.getElementById('pageTitle').innerText = '审核：' + decodeURIComponent(title);
+
+        loadEnrollments();
+    };
+
+    async function loadEnrollments() {
+        try {
+            const response = await fetch(`http://localhost:8080/api/enrollment/activity/${currentActivityId}`);
+            const result = await response.json();
+
+            if (result.code === 200) {
+                renderTable(result.data);
+            } else {
+                alert('加载失败: ' + result.message);
+            }
+        } catch (error) {
+            console.error(error);
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">网络错误</td></tr>';
+        }
+    }
+
+    function renderTable(list) {
+        const tbody = document.getElementById('tableBody');
+        document.getElementById('countDisplay').innerText = list.length;
+
+        if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: #999;">暂无报名记录</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = list.map(item => `
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:30px; height:30px; background:#e0e7ff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#667eea; font-weight:bold;">
+                                ${item.volunteerName ? item.volunteerName.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            ${item.volunteerName || '未知用户'}
+                        </div>
+                    </td>
+                    <td>${item.volunteerPhone || '无电话'}</td>
+                    <td>${formatDate(item.createTime)}</td>
+                    <td><span class="status-badge status-${item.auditStatus}">${getStatusText(item.auditStatus)}</span></td>
+                    <td style="color: #666; font-size: 13px;">${item.auditRemark || '-'}</td>
+                    <td>
+                        ${item.auditStatus === 0 ? `
+                            <div class="btn-group">
+                                <button class="btn-pass" onclick="handleAudit(${item.id}, 1)">
+                                    <i class="fas fa-check"></i> 通过
+                                </button>
+                                <button class="btn-reject" onclick="openRejectModal(${item.id})">
+                                    <i class="fas fa-times"></i> 驳回
+                                </button>
+                            </div>
+                        ` : '<span style="color:#999; font-size:12px;">已处理</span>'}
+                    </td>
+                </tr>
+            `).join('');
+    }
+
+    async function handleAudit(id, status, remark = '') {
+        if (status === 1 && !confirm('确定要通过申请吗？')) return;
+
+        try {
+            const response = await fetch('http://localhost:8080/api/enrollment/audit', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, status, remark })
+            });
+            const result = await response.json();
+
+            if (result.code === 200) {
+                alert('操作成功');
+                closeModal();
+                loadEnrollments();
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert('网络请求失败');
+        }
+    }
+
+    function openRejectModal(id) {
+        currentRejectId = id;
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').classList.add('active');
+    }
+    function closeModal() {
+        document.getElementById('rejectModal').classList.remove('active');
+        currentRejectId = null;
+    }
+    function confirmReject() {
+        if (!currentRejectId) return;
+        const remark = document.getElementById('rejectReason').value;
+        handleAudit(currentRejectId, 2, remark);
+    }
+
+    function getStatusText(status) {
+        return ['待审核', '已通过', '已驳回'][status] || '未知';
+    }
+
+    function formatDate(str) {
+        if(!str) return '';
+        return str.replace('T', ' ').substring(0, 16);
+    }
+</script>
+</body>
+</html>
