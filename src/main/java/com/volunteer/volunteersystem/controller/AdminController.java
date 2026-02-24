@@ -58,19 +58,17 @@ public class AdminController {
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer type // 【新增】筛选用户类型
+            @RequestParam(required = false) Integer type
     ) {
         Page<User> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
 
-        // 如果传了type，就精准查询；没传就查所有非管理员
         if (type != null) {
             wrapper.eq(User::getUserType, type);
         } else {
             wrapper.ne(User::getUserType, 3);
         }
 
-        // 搜索逻辑
         if (keyword != null && !keyword.trim().isEmpty()) {
             wrapper.and(w -> w.like(User::getUsername, keyword)
                     .or().like(User::getRealName, keyword)
@@ -93,6 +91,78 @@ public class AdminController {
         userMapper.updateById(user);
 
         return Result.success(req.getStatus() == 1 ? "用户已解封" : "用户已封禁");
+    }
+
+    // ================== 新增：用户增删改查与审核模块 ==================
+
+    /**
+     * 4. 管理员新增用户
+     */
+    @PostMapping("/user/add")
+    public Result<String> addUser(@RequestBody User user) {
+        if (user.getUsername() == null || user.getPassword() == null) {
+            return Result.error("用户名和密码不能为空");
+        }
+
+        Long count = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
+        if (count > 0) {
+            return Result.error("用户名已存在");
+        }
+
+        if (user.getStatus() == null) user.setStatus(1);
+        if (user.getUserType() == null) user.setUserType(1);
+
+        int result = userMapper.insert(user);
+        return result > 0 ? Result.success("添加成功") : Result.error("添加失败");
+    }
+
+    /**
+     * 5. 管理员修改用户
+     */
+    @PutMapping("/user/update")
+    public Result<String> updateUser(@RequestBody User user) {
+        if (user.getId() == null) return Result.error("用户ID不能为空");
+
+        // 防呆设计：如果密码为空，说明前端没填新密码，保留老密码不修改
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            User oldUser = userMapper.selectById(user.getId());
+            if (oldUser != null) {
+                user.setPassword(oldUser.getPassword());
+            }
+        }
+
+        int result = userMapper.updateById(user);
+        return result > 0 ? Result.success("修改成功") : Result.error("修改失败");
+    }
+
+    /**
+     * 6. 管理员删除用户
+     */
+    @DeleteMapping("/user/{id}")
+    public Result<String> deleteUser(@PathVariable Long id) {
+        int result = userMapper.deleteById(id);
+        return result > 0 ? Result.success("删除成功") : Result.error("删除失败");
+    }
+
+    /**
+     * 7. 组织者注册审核 (通过/驳回)
+     */
+    @PutMapping("/user/audit")
+    public Result<String> auditUser(@RequestBody Map<String, Object> params) {
+        try {
+            Long id = Long.valueOf(params.get("id").toString());
+            Integer status = Integer.valueOf(params.get("status").toString()); // 1为通过，3为驳回
+
+            User user = userMapper.selectById(id);
+            if (user != null) {
+                user.setStatus(status);
+                userMapper.updateById(user);
+                return Result.success("审核操作成功");
+            }
+            return Result.error("用户不存在");
+        } catch (Exception e) {
+            return Result.error("参数错误");
+        }
     }
 
     @Data

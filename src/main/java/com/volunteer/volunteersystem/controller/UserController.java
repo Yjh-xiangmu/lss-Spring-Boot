@@ -40,28 +40,40 @@ public class UserController {
             return Result.error("用户名或密码错误");
         }
 
+        // ================== 【新增：账号状态拦截】 ==================
+        if (user.getStatus() != null) {
+            if (user.getStatus() == 0) {
+                return Result.error("账号已被封禁，请联系管理员");
+            }
+            if (user.getStatus() == 2) {
+                return Result.error("您的组织者账号正在审核中，请耐心等待");
+            }
+            if (user.getStatus() == 3) {
+                return Result.error("您的组织者注册申请已被驳回");
+            }
+        }
+        // ==========================================================
+
         user.setPassword(null);
         return Result.success(user);
     }
 
     /**
-     * 志愿者注册
+     * 用户注册
      */
     @PostMapping("/register")
     public Result<String> register(@RequestBody RegisterRequest request) {
         try {
-            // ================== 【新增：后端格式校验】 ==================
-            // 1. 校验手机号格式
+            // 【新增：后端格式严格校验】
             String phoneRegex = "^1[3-9]\\d{9}$";
             if (request.getPhone() == null || !request.getPhone().matches(phoneRegex)) {
                 return Result.error("手机号格式不正确");
             }
-
-            // 2. 校验身份证号格式
             String idCardRegex = "^[1-9]\\d{5}(18|19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])\\d{3}[\\dX]$";
             if (request.getIdCard() == null || !request.getIdCard().matches(idCardRegex)) {
                 return Result.error("身份证号格式不正确");
             }
+
             // 验证用户名是否存在
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getUsername, request.getUsername());
@@ -95,8 +107,17 @@ public class UserController {
             user.setIdCard(request.getIdCard());
             user.setCommunity(request.getCommunity());
             user.setSkills(request.getSkills());
-            user.setUserType(request.getUserType() != null ? request.getUserType() : 1); // 志愿者
-            user.setStatus(1);
+
+            // ================== 【修改：根据角色分配初始状态】 ==================
+            int type = (request.getUserType() != null) ? request.getUserType() : 1;
+            user.setUserType(type);
+            if (type == 2) {
+                user.setStatus(2); // 组织者：默认 2 (待审核)
+            } else {
+                user.setStatus(1); // 志愿者：默认 1 (正常)
+            }
+            // ===============================================================
+
             user.setStarLevel(1);
             user.setTotalHours(new java.math.BigDecimal(0));
             user.setTotalPoints(0);
@@ -185,7 +206,7 @@ public class UserController {
     }
 
     /**
-     * 注册请求参数
+     * 注册请求参数 (已新增 userType 字段)
      */
     @lombok.Data
     public static class RegisterRequest {
@@ -196,7 +217,7 @@ public class UserController {
         private String idCard;
         private String community;
         private String skills;
-        private Integer userType;
+        private Integer userType; // 【新增】接收前端传来的角色类型
     }
 
     /**

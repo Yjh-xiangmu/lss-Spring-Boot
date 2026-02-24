@@ -7,76 +7,28 @@
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6366f1;
-            --glass: rgba(255, 255, 255, 0.85);
-            --glass-dark: rgba(15, 23, 42, 0.85);
-            --text-main: #1e293b;
-        }
-
+        :root { --primary: #6366f1; --glass: rgba(255, 255, 255, 0.85); --glass-dark: rgba(15, 23, 42, 0.85); --text-main: #1e293b; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            height: 100vh; overflow: hidden; display: flex;
-        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradientBG 15s ease infinite; height: 100vh; overflow: hidden; display: flex; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        /* 侧边栏 */
-        .sidebar {
-            width: 260px; background: var(--glass-dark); backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255,255,255,0.1); padding: 25px;
-            display: flex; flex-direction: column; color: white; z-index: 10;
-        }
+        .sidebar { width: 260px; background: var(--glass-dark); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.1); padding: 25px; display: flex; flex-direction: column; color: white; z-index: 10; }
         .brand { font-size: 22px; font-weight: 800; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
         .brand i { color: #FF6B6B; }
-
-        .menu-item {
-            padding: 14px 20px; margin-bottom: 5px; border-radius: 12px; cursor: pointer;
-            color: #94a3b8; font-weight: 500; display: flex; align-items: center; gap: 15px;
-            transition: 0.3s;
-        }
+        .menu-item { padding: 14px 20px; margin-bottom: 5px; border-radius: 12px; cursor: pointer; color: #94a3b8; font-weight: 500; display: flex; align-items: center; gap: 15px; transition: 0.3s; }
         .menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
         .menu-item.active { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4); }
-
-        /* 主内容 */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
-
-        /* 顶部栏 */
-        .header {
-            background: var(--glass); backdrop-filter: blur(12px);
-            border-radius: 20px; padding: 15px 30px; margin-bottom: 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
+        .header { background: var(--glass); backdrop-filter: blur(12px); border-radius: 20px; padding: 15px 30px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .admin-profile { display: flex; align-items: center; gap: 15px; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; color: var(--primary); }
-
-        /* 通用面板 */
-        .panel {
-            background: var(--glass); backdrop-filter: blur(12px);
-            border-radius: 24px; padding: 30px; margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); animation: fadeIn 0.5s ease;
-        }
+        .panel { background: var(--glass); backdrop-filter: blur(12px); border-radius: 24px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .panel-title { font-size: 20px; font-weight: 700; color: var(--text-main); border-left: 5px solid var(--primary); padding-left: 15px; }
-
-        /* 统计卡片 */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 30px; }
-        .stat-card {
-            background: rgba(255,255,255,0.9); border-radius: 20px; padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 20px;
-            transition: 0.3s; cursor: pointer;
-        }
+        .stat-card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 20px; transition: 0.3s; cursor: pointer; }
         .stat-card:hover { transform: translateY(-5px); }
         .stat-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; }
-
-        /* 表格样式 */
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 15px; color: #64748b; font-size: 13px; border-bottom: 2px solid #f1f5f9; }
         td { padding: 15px; color: #334155; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
@@ -85,25 +37,22 @@
         .tag-red { background: #fee2e2; color: #991b1b; }
         .tag-blue { background: #dbeafe; color: #1e40af; }
         .tag-purple { background: #f3e8ff; color: #7e22ce; }
-
-        /* 按钮 */
-        .btn { padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 13px; }
+        .tag-yellow { background: #fef3c7; color: #92400e; }
+        .btn { padding: 6px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 12px; margin-right: 5px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: #4f46e5; }
+        .btn-success { background: #10b981; color: white; }
         .btn-danger { background: #fee2e2; color: #ef4444; }
         .btn-danger:hover { background: #fecaca; }
-        .btn-icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px; }
-
+        .btn-warning { background: #f59e0b; color: white; }
         .section-view { display: none; }
         .section-view.active { display: block; }
-
-        /* 弹窗 */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal.active { display: flex; }
         .modal-box { background: white; border-radius: 20px; width: 600px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
         .form-group { margin-bottom: 20px; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 600; color: #334155; }
-        .form-control { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: 0.3s; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 600; color: #334155; font-size: 14px; }
+        .form-control { width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; font-size: 14px; }
         .form-control:focus { border-color: var(--primary); }
         .preview-img { width: 100px; height: 100px; border-radius: 10px; object-fit: cover; margin-top: 10px; background: #f1f5f9; display: none; }
     </style>
@@ -158,11 +107,14 @@
     <div id="volunteer-mgr" class="section-view">
         <div class="panel">
             <div class="panel-header">
-                <div class="panel-title">志愿者名录</div>
-                <button class="btn btn-primary" onclick="loadUsers(1, 1)"><i class="fas fa-sync"></i> 刷新</button>
+                <div class="panel-title">志愿者管理</div>
+                <div>
+                    <button class="btn btn-primary" onclick="openUserModal(1)"><i class="fas fa-plus"></i> 新增志愿者</button>
+                    <button class="btn btn-primary" onclick="loadUsers(1, 1)"><i class="fas fa-sync"></i></button>
+                </div>
             </div>
             <table>
-                <thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>社区</th><th>积分</th><th>状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>ID</th><th>登录名</th><th>姓名</th><th>手机</th><th>社区</th><th>积分</th><th>状态</th><th>操作</th></tr></thead>
                 <tbody id="tbody-vol"></tbody>
             </table>
         </div>
@@ -171,10 +123,14 @@
     <div id="organizer-mgr" class="section-view">
         <div class="panel">
             <div class="panel-header">
-                <div class="panel-title">组织者审核</div>
+                <div class="panel-title">组织者管理与审核</div>
+                <div>
+                    <button class="btn btn-primary" onclick="openUserModal(2)"><i class="fas fa-plus"></i> 新增组织</button>
+                    <button class="btn btn-primary" onclick="loadUsers(1, 2)"><i class="fas fa-sync"></i></button>
+                </div>
             </div>
             <table>
-                <thead><tr><th>ID</th><th>组织名称</th><th>联系方式</th><th>地址</th><th>状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>ID</th><th>登录名</th><th>组织名称</th><th>联系方式</th><th>地址/社区</th><th>状态</th><th>审核与操作</th></tr></thead>
                 <tbody id="tbody-org"></tbody>
             </table>
         </div>
@@ -186,123 +142,72 @@
                 <div class="panel-title">活动分类字典</div>
                 <button class="btn btn-primary" onclick="openTypeModal()"><i class="fas fa-plus"></i> 新增分类</button>
             </div>
-            <table>
-                <thead><tr><th>ID</th><th>分类名称</th><th>排序权重</th><th>状态</th><th>操作</th></tr></thead>
-                <tbody id="tbody-type"></tbody>
-            </table>
+            <table><thead><tr><th>ID</th><th>分类名称</th><th>排序权重</th><th>状态</th><th>操作</th></tr></thead><tbody id="tbody-type"></tbody></table>
         </div>
     </div>
 
     <div id="mall-mgr" class="section-view">
         <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">商城运营</div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="toggleMallView('product')">商品库</button>
-                    <button class="btn btn-primary" style="background:#8b5cf6" onclick="toggleMallView('order')">订单处理</button>
-                </div>
-            </div>
-
-            <div id="mall-products">
-                <button class="btn btn-primary" style="margin-bottom:15px;" onclick="openProductModal()">+ 上架商品</button>
-                <table><thead><tr><th>图</th><th>名称</th><th>积分</th><th>库存</th><th>状态</th><th>操作</th></tr></thead><tbody id="tbody-product"></tbody></table>
-            </div>
-
-            <div id="mall-orders" style="display:none;">
-                <table><thead><tr><th>单号</th><th>商品</th><th>用户</th><th>状态</th><th>操作</th></tr></thead><tbody id="tbody-order"></tbody></table>
-            </div>
+            <div class="panel-header"><div class="panel-title">商城运营</div><div style="display:flex; gap:10px;"><button class="btn btn-primary" onclick="toggleMallView('product')">商品库</button><button class="btn btn-primary" style="background:#8b5cf6" onclick="toggleMallView('order')">订单处理</button></div></div>
+            <div id="mall-products"><button class="btn btn-primary" style="margin-bottom:15px;" onclick="openProductModal()">+ 上架商品</button><table><thead><tr><th>图</th><th>名称</th><th>积分</th><th>库存</th><th>状态</th><th>操作</th></tr></thead><tbody id="tbody-product"></tbody></table></div>
+            <div id="mall-orders" style="display:none;"><table><thead><tr><th>单号</th><th>商品</th><th>用户</th><th>状态</th><th>操作</th></tr></thead><tbody id="tbody-order"></tbody></table></div>
         </div>
     </div>
 
     <div id="news-mgr" class="section-view">
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">内容发布</div>
-                <button class="btn btn-primary" onclick="openArticleModal()">+ 发布资讯</button>
-            </div>
-            <table>
-                <thead><tr><th>封面</th><th>标题</th><th>类型</th><th>置顶</th><th>浏览</th><th>发布时间</th><th>操作</th></tr></thead>
-                <tbody id="tbody-news"></tbody>
-            </table>
-        </div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">内容发布</div><button class="btn btn-primary" onclick="openArticleModal()">+ 发布资讯</button></div><table><thead><tr><th>封面</th><th>标题</th><th>类型</th><th>置顶</th><th>浏览</th><th>发布时间</th><th>操作</th></tr></thead><tbody id="tbody-news"></tbody></table></div>
     </div>
 </div>
 
-<div class="modal" id="typeModal">
-    <div class="modal-box" style="width: 400px;">
-        <h3 style="margin-bottom:20px; font-size:20px;">🏷️ 活动分类编辑</h3>
-        <form id="typeForm">
-            <input type="hidden" id="typeId">
-            <div class="form-group">
-                <label class="form-label">分类名称 <span style="color:red">*</span></label>
-                <input type="text" class="form-control" id="typeName" required placeholder="如：环境保护">
+<div class="modal" id="userModal">
+    <div class="modal-box" style="width: 500px;">
+        <h3 id="userModalTitle" style="margin-bottom:20px; font-size:20px;">用户信息编辑</h3>
+        <form id="userForm">
+            <input type="hidden" id="userId">
+            <input type="hidden" id="userType">
+            <div class="form-group" style="display:flex; gap:15px;">
+                <div style="flex:1;">
+                    <label class="form-label">登录账号 <span style="color:red">*</span></label>
+                    <input type="text" class="form-control" id="u_username" required>
+                </div>
+                <div style="flex:1;">
+                    <label class="form-label">登录密码</label>
+                    <input type="text" class="form-control" id="u_password" placeholder="留空则不修改">
+                </div>
             </div>
             <div class="form-group" style="display:flex; gap:15px;">
                 <div style="flex:1;">
-                    <label class="form-label">排序权重</label>
-                    <input type="number" class="form-control" id="typeSort" value="0" required>
-                    <p style="font-size:12px; color:#999; margin-top:5px;">数字越小排越前</p>
+                    <label class="form-label">真实姓名/机构名 <span style="color:red">*</span></label>
+                    <input type="text" class="form-control" id="u_realName" required>
                 </div>
                 <div style="flex:1;">
-                    <label class="form-label">状态</label>
-                    <select class="form-control" id="typeStatus">
-                        <option value="1">启用 (可见)</option>
-                        <option value="0">禁用 (隐藏)</option>
-                    </select>
+                    <label class="form-label">联系手机 <span style="color:red">*</span></label>
+                    <input type="text" class="form-control" id="u_phone" required>
                 </div>
             </div>
-            <div style="text-align:right; display:flex; gap:10px; justify-content:flex-end;">
-                <button type="button" class="btn" onclick="closeModal('typeModal')">取消</button>
-                <button type="submit" class="btn btn-primary">保存</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="modal" id="articleModal">
-    <div class="modal-box">
-        <h3 style="margin-bottom:20px; font-size:20px;">📝 资讯编辑</h3>
-        <form id="articleForm">
-            <input type="hidden" id="artId">
-            <div class="form-group"><label class="form-label">标题</label><input type="text" class="form-control" id="artTitle" required></div>
-            <div class="form-group" style="display:flex; gap:15px;">
-                <div style="flex:1;"><label class="form-label">类型</label><select class="form-control" id="artType"><option value="1">通知公告</option><option value="2">活动风采</option><option value="3">志愿者故事</option></select></div>
-                <div style="flex:1;"><label class="form-label">置顶</label><select class="form-control" id="artTop"><option value="0">否</option><option value="1">是</option></select></div>
-            </div>
             <div class="form-group">
-                <label class="form-label">封面图</label><input type="file" id="artFile" accept="image/*" onchange="handleArtImg(this)"><img id="artPreview" class="preview-img"><input type="hidden" id="artBase64">
-                <p style="font-size:12px; color:#999; margin-top:5px;">建议图片小于 1MB</p>
+                <label class="form-label">所属社区/详细地址</label>
+                <input type="text" class="form-control" id="u_community">
             </div>
-            <div class="form-group"><label class="form-label">正文内容</label><textarea class="form-control" id="artContent" rows="5" required></textarea></div>
-            <div style="text-align:right; display:flex; gap:10px; justify-content:flex-end;"><button type="button" class="btn" onclick="closeModal('articleModal')">取消</button><button type="submit" class="btn btn-primary">发布</button></div>
+            <div style="text-align:right; margin-top: 20px;">
+                <button type="button" class="btn btn-danger" onclick="closeModal('userModal')">取消</button>
+                <button type="submit" class="btn btn-primary">保存用户信息</button>
+            </div>
         </form>
     </div>
 </div>
 
-<div class="modal" id="productModal">
-    <div class="modal-box">
-        <h3 style="margin-bottom:20px;">🎁 商品编辑</h3>
-        <form id="productForm">
-            <input type="hidden" id="prodId">
-            <div class="form-group"><label class="form-label">名称</label><input type="text" class="form-control" id="prodName" required></div>
-            <div class="form-group" style="display:flex; gap:15px;">
-                <div style="flex:1;"><label class="form-label">积分</label><input type="number" class="form-control" id="prodPrice" required></div>
-                <div style="flex:1;"><label class="form-label">库存</label><input type="number" class="form-control" id="prodStock" required></div>
-            </div>
-            <div class="form-group"><label class="form-label">图片</label><input type="file" accept="image/*" onchange="handleProdImg(this)"><img id="prodPreview" class="preview-img"><input type="hidden" id="prodBase64"></div>
-            <div style="text-align:right;"><button type="button" class="btn" onclick="closeModal('productModal')">取消</button><button type="submit" class="btn btn-primary">保存</button></div>
-        </form>
-    </div>
-</div>
+<div class="modal" id="typeModal"><div class="modal-box" style="width: 400px;"><h3 style="margin-bottom:20px;">🏷️ 活动分类编辑</h3><form id="typeForm"><input type="hidden" id="typeId"><div class="form-group"><label class="form-label">分类名称</label><input type="text" class="form-control" id="typeName" required></div><div class="form-group" style="display:flex; gap:15px;"><div style="flex:1;"><label class="form-label">排序权重</label><input type="number" class="form-control" id="typeSort" value="0"></div><div style="flex:1;"><label class="form-label">状态</label><select class="form-control" id="typeStatus"><option value="1">启用</option><option value="0">禁用</option></select></div></div><div style="text-align:right;"><button type="button" class="btn" onclick="closeModal('typeModal')">取消</button><button type="submit" class="btn btn-primary">保存</button></div></form></div></div>
+<div class="modal" id="articleModal"><div class="modal-box"><h3 style="margin-bottom:20px;">📝 资讯编辑</h3><form id="articleForm"><input type="hidden" id="artId"><div class="form-group"><label class="form-label">标题</label><input type="text" class="form-control" id="artTitle" required></div><div class="form-group" style="display:flex; gap:15px;"><div style="flex:1;"><label class="form-label">类型</label><select class="form-control" id="artType"><option value="1">通知公告</option><option value="2">活动风采</option><option value="3">志愿者故事</option></select></div><div style="flex:1;"><label class="form-label">置顶</label><select class="form-control" id="artTop"><option value="0">否</option><option value="1">是</option></select></div></div><div class="form-group"><label class="form-label">封面图</label><input type="file" id="artFile" accept="image/*" onchange="handleArtImg(this)"><img id="artPreview" class="preview-img"><input type="hidden" id="artBase64"></div><div class="form-group"><label class="form-label">正文内容</label><textarea class="form-control" id="artContent" rows="5" required></textarea></div><div style="text-align:right;"><button type="button" class="btn" onclick="closeModal('articleModal')">取消</button><button type="submit" class="btn btn-primary">发布</button></div></form></div></div>
+<div class="modal" id="productModal"><div class="modal-box"><h3 style="margin-bottom:20px;">🎁 商品编辑</h3><form id="productForm"><input type="hidden" id="prodId"><div class="form-group"><label class="form-label">名称</label><input type="text" class="form-control" id="prodName" required></div><div class="form-group" style="display:flex; gap:15px;"><div style="flex:1;"><label class="form-label">积分</label><input type="number" class="form-control" id="prodPrice" required></div><div style="flex:1;"><label class="form-label">库存</label><input type="number" class="form-control" id="prodStock" required></div></div><div class="form-group"><label class="form-label">图片</label><input type="file" accept="image/*" onchange="handleProdImg(this)"><img id="prodPreview" class="preview-img"><input type="hidden" id="prodBase64"></div><div style="text-align:right;"><button type="button" class="btn" onclick="closeModal('productModal')">取消</button><button type="submit" class="btn btn-primary">保存</button></div></form></div></div>
 
 <script>
+    // ============== 页面初始化与导航 ==============
     window.onload = function() {
         document.getElementById('currentDate').innerText = new Date().toLocaleDateString();
-        loadStats();
-        loadUsers(1,1);
+        loadStats(); loadUsers(1,1);
     };
 
-    // 切换面板
     function switchTab(id) {
         document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
         document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
@@ -311,92 +216,150 @@
 
         if(id==='volunteer-mgr') loadUsers(1,1);
         if(id==='organizer-mgr') loadUsers(1,2);
-        if(id==='type-mgr') loadTypes(); // 加载分类
+        if(id==='type-mgr') loadTypes();
         if(id==='mall-mgr') { loadProducts(); loadOrders(); }
         if(id==='news-mgr') loadNews();
     }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // ==========================================
-    // 新增：活动分类管理逻辑
-    // ==========================================
-    async function loadTypes() {
+    // ============== 用户管理 (CRUD与审核) ==============
+
+    // 生成状态标签
+    function getStatusTag(status) {
+        if(status === 1) return '<span class="tag tag-green">正常</span>';
+        if(status === 0) return '<span class="tag tag-red">封禁</span>';
+        if(status === 2) return '<span class="tag tag-blue">待审核</span>';
+        if(status === 3) return '<span class="tag tag-yellow">已驳回</span>';
+        return '<span class="tag">未知</span>';
+    }
+
+    async function loadUsers(p, type) {
+        const tbody = type===1 ? document.getElementById('tbody-vol') : document.getElementById('tbody-org');
         try {
-            // 调用之前在 ActivityTypeController 写的 /all 接口
-            const res = await fetch('http://localhost:8080/api/activity-type/all');
+            const res = await fetch(`http://localhost:8080/api/admin/users?pageNum=${p}&type=${type}`);
             const d = await res.json();
-            if(d.code === 200) {
-                document.getElementById('tbody-type').innerHTML = d.data.map(t => `
-                    <tr>
-                        <td>#${t.id}</td>
-                        <td><span class="tag tag-purple">${t.typeName}</span></td>
-                        <td>${t.sort}</td>
-                        <td><span class="tag ${t.status === 1 ? 'tag-green' : 'tag-red'}">${t.status === 1 ? '启用' : '禁用'}</span></td>
-                        <td>
-                            <button class="btn btn-primary" style="padding: 5px 10px;" onclick="editType(${t.id}, '${t.typeName}', ${t.sort}, ${t.status})">编辑</button>
-                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="delType(${t.id})">删除</button>
-                        </td>
-                    </tr>`).join('');
+            if(d.code===200) {
+                tbody.innerHTML = d.data.records.map(u => {
+                    const objStr = encodeURIComponent(JSON.stringify(u)); // 序列化用户对象用于编辑
+
+                    // 动态生成操作按钮
+                    let actionHtml = '';
+                    if (type === 2 && u.status === 2) {
+                        // 组织者且待审核：显示通过/驳回
+                        actionHtml += `<button class="btn btn-success" onclick="auditUser(${u.id}, 1)">通过</button>`;
+                        actionHtml += `<button class="btn btn-warning" onclick="auditUser(${u.id}, 3)">驳回</button>`;
+                    } else {
+                        // 正常状态：显示编辑、删除、封禁
+                        actionHtml += `<button class="btn btn-primary" onclick="openUserModal(${type}, '${objStr}')">编辑</button>`;
+                        actionHtml += `<button class="btn btn-danger" onclick="deleteUser(${u.id}, ${type})">删除</button>`;
+                        if (u.status === 1 || u.status === 0) {
+                            const banText = u.status === 1 ? '封禁' : '解封';
+                            const banColor = u.status === 1 ? 'btn-danger' : 'btn-success';
+                            actionHtml += `<button class="btn ${banColor}" onclick="changeUserStatus(${u.id}, ${u.status===1?0:1}, ${type})">${banText}</button>`;
+                        }
+                    }
+
+                    return `
+                        <tr>
+                            <td>#${u.id}</td>
+                            <td>${u.username}</td>
+                            <td>${u.realName || '-'}</td>
+                            <td>${u.phone || '-'}</td>
+                            <td>${u.community || u.address || '-'}</td>
+                            ${type===1 ? `<td>${u.points||0}</td>` : ''}
+                            <td>${getStatusTag(u.status)}</td>
+                            <td>${actionHtml}</td>
+                        </tr>
+                    `;
+                }).join('');
             }
-        } catch (e) {
-            console.error('加载分类失败', e);
+        } catch (e) { console.error(e); }
+    }
+
+    // 打开编辑/新增用户弹窗
+    function openUserModal(type, userStr = null) {
+        document.getElementById('userForm').reset();
+        document.getElementById('userType').value = type;
+        document.getElementById('userModalTitle').innerText = (userStr ? '编辑' : '新增') + (type === 1 ? '志愿者' : '组织者');
+
+        const usernameInput = document.getElementById('u_username');
+        if (userStr) {
+            // 编辑模式：回显数据，账号不可改
+            const user = JSON.parse(decodeURIComponent(userStr));
+            document.getElementById('userId').value = user.id;
+            usernameInput.value = user.username;
+            usernameInput.setAttribute('readonly', 'readonly');
+            usernameInput.style.backgroundColor = '#f1f5f9'; // 置灰
+            document.getElementById('u_realName').value = user.realName || '';
+            document.getElementById('u_phone').value = user.phone || '';
+            document.getElementById('u_community').value = user.community || user.address || '';
+        } else {
+            // 新增模式
+            document.getElementById('userId').value = '';
+            usernameInput.removeAttribute('readonly');
+            usernameInput.style.backgroundColor = 'white';
         }
+        document.getElementById('userModal').classList.add('active');
     }
 
-    function openTypeModal() {
-        document.getElementById('typeForm').reset();
-        document.getElementById('typeId').value = '';
-        document.getElementById('typeModal').classList.add('active');
-    }
-
-    function editType(id, name, sort, status) {
-        document.getElementById('typeId').value = id;
-        document.getElementById('typeName').value = name;
-        document.getElementById('typeSort').value = sort;
-        document.getElementById('typeStatus').value = status;
-        document.getElementById('typeModal').classList.add('active');
-    }
-
-    document.getElementById('typeForm').addEventListener('submit', async e => {
+    // 提交用户表单 (增/改)
+    document.getElementById('userForm').addEventListener('submit', async e => {
         e.preventDefault();
+        const id = document.getElementById('userId').value;
+        const type = document.getElementById('userType').value;
         const data = {
-            id: document.getElementById('typeId').value || null,
-            typeName: document.getElementById('typeName').value,
-            sort: document.getElementById('typeSort').value,
-            status: document.getElementById('typeStatus').value
+            id: id ? parseInt(id) : null,
+            userType: parseInt(type),
+            username: document.getElementById('u_username').value,
+            password: document.getElementById('u_password').value, // 新增时必填，编辑时可选
+            realName: document.getElementById('u_realName').value,
+            phone: document.getElementById('u_phone').value,
+            community: document.getElementById('u_community').value
         };
-        const url = data.id ? 'http://localhost:8080/api/activity-type/update' : 'http://localhost:8080/api/activity-type/add';
-        const method = data.id ? 'PUT' : 'POST';
+
+        if (!id && !data.password) { alert('新增用户必须设置登录密码！'); return; }
+
+        const url = id ? 'http://localhost:8080/api/admin/user/update' : 'http://localhost:8080/api/admin/user/add';
+        const method = id ? 'PUT' : 'POST';
 
         try {
-            const res = await fetch(url, {
-                method: method,
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
+            const res = await fetch(url, { method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
             const result = await res.json();
             if (result.code === 200) {
-                closeModal('typeModal');
-                loadTypes();
-            } else {
-                alert('保存失败: ' + result.msg);
-            }
+                closeModal('userModal');
+                loadUsers(1, parseInt(type));
+                alert('保存成功');
+            } else { alert(result.msg || result.message || '操作失败'); }
         } catch (err) { alert('网络错误'); }
     });
 
-    async function delType(id) {
-        if(confirm('确定删除该分类吗？\n注意：如果已有组织者使用了该分类发活动，建议点“编辑”将其状态改为【禁用】，而不是直接删除！')) {
-            try {
-                const res = await fetch(`http://localhost:8080/api/activity-type/${id}`, {method: 'DELETE'});
-                const result = await res.json();
-                if(result.code === 200) loadTypes();
-                else alert(result.msg || '删除失败');
-            } catch (e) { alert('网络异常'); }
+    // 审核组织者
+    async function auditUser(id, status) {
+        const action = status === 1 ? '通过' : '驳回';
+        if(confirm(`确定要【${action}】该组织者的注册申请吗？`)) {
+            await fetch('http://localhost:8080/api/admin/user/audit', {
+                method: 'PUT', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: id, status: status})
+            });
+            loadUsers(1, 2);
         }
     }
-    // ==========================================
 
+    // 删除用户
+    async function deleteUser(id, type) {
+        if(confirm('警告：删除用户将清除其所有数据，确定要物理删除吗？')) {
+            await fetch(`http://localhost:8080/api/admin/user/${id}`, { method: 'DELETE' });
+            loadUsers(1, type);
+        }
+    }
 
-    // 其他原有逻辑 (Stats, Users, News, Mall)
+    // 封禁/解封
+    async function changeUserStatus(id, s, type) {
+        await fetch('http://localhost:8080/api/admin/user/status', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id,status:s})});
+        loadUsers(1, type);
+    }
+
+    // ============== 其他模块原有逻辑 ==============
     async function loadStats() {
         try {
             const res = await fetch('http://localhost:8080/api/admin/stats');
@@ -409,94 +372,49 @@
         } catch(e){}
     }
 
-    async function loadUsers(p, type) {
-        const tbody = type===1 ? document.getElementById('tbody-vol') : document.getElementById('tbody-org');
-        const res = await fetch(`http://localhost:8080/api/admin/users?pageNum=${p}&type=${type}`);
-        const d = await res.json();
-        if(d.code===200) {
-            tbody.innerHTML = d.data.records.map(u => `
-                <tr>
-                    <td>#${u.id}</td><td>${u.realName||u.username}</td><td>${u.phone||'-'}</td><td>${u.community||u.address||'-'}</td>
-                    ${type===1?`<td>${u.points||0}</td>`:''}
-                    <td><span class="tag ${u.status===1?'tag-green':'tag-red'}">${u.status===1?'正常':'封禁'}</span></td>
-                    <td><button class="btn btn-icon ${u.status===1?'btn-danger':'btn-primary'}" onclick="changeUserStatus(${u.id},${u.status===1?0:1},${type})"><i class="fas ${u.status===1?'fa-ban':'fa-check'}"></i></button></td>
-                </tr>`).join('');
-        }
+    // 分类管理
+    async function loadTypes() {
+        try {
+            const res = await fetch('http://localhost:8080/api/activity-type/all'); const d = await res.json();
+            if(d.code === 200) {
+                document.getElementById('tbody-type').innerHTML = d.data.map(t => `<tr><td>#${t.id}</td><td><span class="tag tag-purple">${t.typeName}</span></td><td>${t.sort}</td><td><span class="tag ${t.status === 1 ? 'tag-green' : 'tag-red'}">${t.status === 1 ? '启用' : '禁用'}</span></td><td><button class="btn btn-primary" onclick="editType(${t.id}, '${t.typeName}', ${t.sort}, ${t.status})">编辑</button><button class="btn btn-danger" onclick="delType(${t.id})">删除</button></td></tr>`).join('');
+            }
+        } catch (e) {}
     }
-    async function changeUserStatus(id, s, type) {
-        await fetch('http://localhost:8080/api/admin/user/status', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id,status:s})});
-        loadUsers(1, type);
-    }
+    function openTypeModal() { document.getElementById('typeForm').reset(); document.getElementById('typeId').value = ''; document.getElementById('typeModal').classList.add('active'); }
+    function editType(id, name, sort, status) { document.getElementById('typeId').value=id; document.getElementById('typeName').value=name; document.getElementById('typeSort').value=sort; document.getElementById('typeStatus').value=status; document.getElementById('typeModal').classList.add('active'); }
+    document.getElementById('typeForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = { id: document.getElementById('typeId').value || null, typeName: document.getElementById('typeName').value, sort: document.getElementById('typeSort').value, status: document.getElementById('typeStatus').value };
+        await fetch(data.id ? 'http://localhost:8080/api/activity-type/update' : 'http://localhost:8080/api/activity-type/add', { method: data.id?'PUT':'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        closeModal('typeModal'); loadTypes();
+    });
+    async function delType(id) { if(confirm('确定删除该分类吗？')) { await fetch(`http://localhost:8080/api/activity-type/${id}`, {method: 'DELETE'}); loadTypes(); } }
 
+    // 资讯发布
     async function loadNews() {
-        const res = await fetch('http://localhost:8080/api/article/list');
-        const d = await res.json();
-        if(d.code===200) {
-            document.getElementById('tbody-news').innerHTML = d.data.records.map(a => `
-                <tr>
-                    <td><img src="${a.coverImage||''}" style="width:50px;height:30px;object-fit:cover;border-radius:4px;"></td>
-                    <td style="max-width:200px;">${a.title}</td>
-                    <td><span class="tag tag-blue">${{1:'公告',2:'风采',3:'故事'}[a.articleType]}</span></td>
-                    <td>${a.isTop?'<i class="fas fa-thumbtack" style="color:#f59e0b"></i>':'-'}</td>
-                    <td>${a.views}</td>
-                    <td style="font-size:12px;color:#64748b">${a.createTime ? a.createTime.split('T')[0] : '-'}</td>
-                    <td><button class="btn btn-danger" onclick="delArticle(${a.id})">删</button></td>
-                </tr>`).join('');
-        }
+        const res = await fetch('http://localhost:8080/api/article/list'); const d = await res.json();
+        if(d.code===200) { document.getElementById('tbody-news').innerHTML = d.data.records.map(a => `<tr><td><img src="${a.coverImage||''}" style="width:50px;height:30px;object-fit:cover;border-radius:4px;"></td><td style="max-width:200px;">${a.title}</td><td><span class="tag tag-blue">${{1:'公告',2:'风采',3:'故事'}[a.articleType]}</span></td><td>${a.isTop?'<i class="fas fa-thumbtack" style="color:#f59e0b"></i>':'-'}</td><td>${a.views}</td><td style="font-size:12px;color:#64748b">${a.createTime ? a.createTime.split('T')[0] : '-'}</td><td><button class="btn btn-danger" onclick="delArticle(${a.id})">删除</button></td></tr>`).join(''); }
     }
-
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     function openArticleModal() { document.getElementById('articleModal').classList.add('active'); }
-
     function handleArtImg(input) {
         if(input.files[0]) {
-            if (input.files[0].size > 1024 * 1024 * 2) {
-                alert('图片太大，请选择小于 2MB 的图片');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = e => {
-                document.getElementById('artBase64').value = e.target.result;
-                document.getElementById('artPreview').src = e.target.result;
-                document.getElementById('artPreview').style.display='block';
-            };
-            reader.readAsDataURL(input.files[0]);
+            if (input.files[0].size > 1024 * 1024 * 2) { alert('图片太大'); return; }
+            const reader = new FileReader(); reader.onload = e => { document.getElementById('artBase64').value = e.target.result; document.getElementById('artPreview').src = e.target.result; document.getElementById('artPreview').style.display='block'; }; reader.readAsDataURL(input.files[0]);
         }
     }
-
     document.getElementById('articleForm').addEventListener('submit', async e => {
         e.preventDefault();
-        const data = {
-            id: document.getElementById('artId').value || null,
-            title: document.getElementById('artTitle').value,
-            articleType: document.getElementById('artType').value,
-            isTop: document.getElementById('artTop').value,
-            content: document.getElementById('artContent').value,
-            coverImage: document.getElementById('artBase64').value
-        };
-
-        const url = data.id ? 'http://localhost:8080/api/article/update' : 'http://localhost:8080/api/article/add';
-        const method = data.id ? 'PUT' : 'POST';
-
-        try {
-            const res = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
-            const result = await res.json();
-            if(result.code === 200) {
-                alert('✅ 发布成功！');
-                closeModal('articleModal');
-                loadNews();
-                document.getElementById('articleForm').reset();
-                document.getElementById('artBase64').value = '';
-                document.getElementById('artPreview').style.display = 'none';
-            } else { alert('❌ 失败: ' + result.msg); }
-        } catch (err) { alert('❌ 网络错误'); }
+        const data = { id: document.getElementById('artId').value || null, title: document.getElementById('artTitle').value, articleType: document.getElementById('artType').value, isTop: document.getElementById('artTop').value, content: document.getElementById('artContent').value, coverImage: document.getElementById('artBase64').value };
+        await fetch(data.id ? 'http://localhost:8080/api/article/update' : 'http://localhost:8080/api/article/add', { method: data.id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+        closeModal('articleModal'); loadNews(); document.getElementById('articleForm').reset(); document.getElementById('artPreview').style.display = 'none';
     });
-
     async function delArticle(id) { if(confirm('确定删除吗?')) { await fetch(`http://localhost:8080/api/article/${id}`, {method:'DELETE'}); loadNews(); } }
 
+    // 商城管理
     function toggleMallView(v) { document.getElementById('mall-products').style.display = v==='product'?'block':'none'; document.getElementById('mall-orders').style.display = v==='order'?'block':'none'; }
-    async function loadProducts() { const d = await (await fetch('http://localhost:8080/api/product/list')).json(); document.getElementById('tbody-product').innerHTML = d.data.records.map(p => `<tr><td><img src="${p.image}" style="width:30px;"></td><td>${p.name}</td><td>${p.price}</td><td>${p.stock}</td><td>${p.status===1?'上架':'下架'}</td><td><button onclick="delProd(${p.id})">删</button></td></tr>`).join(''); }
-    async function loadOrders() { const d = await (await fetch('http://localhost:8080/api/exchange/list')).json(); document.getElementById('tbody-order').innerHTML = d.data.records.map(o => `<tr><td>${o.orderNo}</td><td>${o.productName}</td><td>UID:${o.volunteerId}</td><td>${o.receiveStatus===1?'已发':'待发'}</td><td>${o.receiveStatus===0?`<button onclick="ship(${o.id})">发货</button>`:'-'}</td></tr>`).join(''); }
+    async function loadProducts() { const d = await (await fetch('http://localhost:8080/api/product/list')).json(); document.getElementById('tbody-product').innerHTML = d.data.records.map(p => `<tr><td><img src="${p.image}" style="width:30px;"></td><td>${p.name}</td><td>${p.price}</td><td>${p.stock}</td><td>${p.status===1?'上架':'下架'}</td><td><button class="btn btn-danger" onclick="delProd(${p.id})">删</button></td></tr>`).join(''); }
+    async function loadOrders() { const d = await (await fetch('http://localhost:8080/api/exchange/list')).json(); document.getElementById('tbody-order').innerHTML = d.data.records.map(o => `<tr><td>${o.orderNo}</td><td>${o.productName}</td><td>UID:${o.volunteerId}</td><td>${o.receiveStatus===1?'已发':'待发'}</td><td>${o.receiveStatus===0?`<button class="btn btn-success" onclick="ship(${o.id})">发货</button>`:'-'}</td></tr>`).join(''); }
     async function ship(id) { await fetch(`http://localhost:8080/api/exchange/ship/${id}`, {method:'PUT'}); loadOrders(); }
     function openProductModal() { document.getElementById('productModal').classList.add('active'); }
     function handleProdImg(i) { if(i.files[0]) { const r=new FileReader(); r.onload=e=>{document.getElementById('prodBase64').value=e.target.result; document.getElementById('prodPreview').src=e.target.result; document.getElementById('prodPreview').style.display='block'}; r.readAsDataURL(i.files[0]); } }

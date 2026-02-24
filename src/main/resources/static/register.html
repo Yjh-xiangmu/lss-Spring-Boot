@@ -198,7 +198,7 @@
 
             const result = await response.json();
             if (result.code === 200) {
-                alert('注册成功！请登录');
+                alert('组织者请等待审核，志愿者请返回主页登录');
                 window.location.href = 'login.html';
             } else {
                 showError(result.message || '注册失败');
